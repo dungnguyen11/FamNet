@@ -7,4 +7,78 @@
     android:layout_height="match_parent"
     tools:context="com.famnet.famnet.PersonalTaskBoardActivity">
 
+
+    <!-- ADD NEW TASK SECTION -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="220dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:id="@+id/scrollViewBoard">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/textViewBoard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Personal Tasks Board"
+                android:textColor="#F39C12"
+                android:textSize="20sp"/>
+
+            <ListView
+                android:id="@+id/listViewBoard"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+              />
+
+        </LinearLayout>
+    </ScrollView>
+
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="220dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/scrollViewBoard"
+        android:id="@+id/scrollViewTaking">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+            <TextView
+                android:id="@+id/textViewTaking"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Tasks On Working"
+                android:textColor="#27AE60"
+                android:textSize="20sp"
+                />
+            <ListView
+                android:id="@+id/listViewTaking"
+                android:layout_width="match_parent"
+                android:layout_height="200dp" />
+
+        </LinearLayout>
+    </ScrollView>
+
+
+
+    <ImageView
+        android:id="@+id/AddMember"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        app:srcCompat="@drawable/add_new_task_button"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toTopOf="parent"
+        android:onClick="onClickAddNewTask"/>
+
 </android.support.constraint.ConstraintLayout>

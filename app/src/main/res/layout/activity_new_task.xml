@@ -7,4 +7,223 @@
     android:layout_height="match_parent"
     tools:context="com.famnet.famnet.NewTaskActivity">
 
+
+
+    <!-- NEW TASK TITLE SECTION -->
+
+
+
+
+    <TextView
+        android:id="@+id/newtasktitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+       android:text="NEW TASK"
+        android:textColor="#D50000"
+        android:textSize="20sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+       />
+
+
+
+    <!-- TASK NAME SECTION -->
+
+    <LinearLayout
+        android:id="@+id/TaskNameLayout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+
+        app:layout_constraintTop_toBottomOf="@+id/newtasktitle">
+
+
+
+        <TextView
+            android:id="@+id/tasknamelabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:text="Task Name"
+            android:textSize="18sp"
+            android:textColor="#3498DB"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/newtasktitle"/>
+
+        <EditText
+            android:id="@+id/TaskNameInput"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:textSize="18sp"
+            app:layout_constraintLeft_toRightOf="@+id/name"
+            app:layout_constraintTop_toBottomOf="@+id/newtasktitle"
+            />
+    </LinearLayout>
+
+    <!-- REWARDS SECTION -->
+
+    <LinearLayout
+        android:id="@+id/RewardLayout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toBottomOf="@+id/TaskNameLayout">
+
+        <TextView
+            android:id="@+id/rewardlabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:text="Rewards"
+            android:textSize="18sp"
+            android:textColor="#3498DB"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tasknamelabel" />
+
+        <EditText
+            android:id="@+id/rewardinput"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:layout_marginLeft="16dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/TaskNameInput"/>
+
+    </LinearLayout>
+
+    <!-- DESCRIPTION SECTION -->
+    <LinearLayout
+        android:id="@+id/DescriptionLayout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toBottomOf="@+id/RewardLayout">
+<RelativeLayout
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/DescriptionLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:text="Description"
+            android:textSize="18sp"
+            android:textColor="#3498DB"
+            app:layout_constraintLeft_toLeftOf="parent"
+            />
+
+        <EditText
+            android:id="@+id/DescriptionInput"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:layout_marginTop="16dp"
+            android:inputType="textMultiLine"
+            android:scrollHorizontally="false"
+            android:maxLines="10"
+            android:scrollbars="vertical"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+           />
+
+</RelativeLayout>
+
+    </LinearLayout>
+
+    <!-- DEADLINE SECTION -->
+
+    <LinearLayout
+        android:id="@+id/DeadLineLayout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toBottomOf="@+id/DescriptionLayout">
+
+
+        <TextView
+            android:id="@+id/deadlinelabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:text="Deadline"
+            android:textSize="18sp"
+            android:textColor="#3498DB"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/DescriptionLayout"/>
+
+        <TextView
+            android:id="@+id/deadlineinput"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:text="DD/MM/YYYY"
+            android:layout_marginLeft="16dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/DescriptionLayout"/>
+
+        <ImageView
+            android:id="@+id/CalendarIcon"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginLeft="16dp"
+            app:srcCompat="@drawable/calendar_button"
+            app:layout_constraintLeft_toRightOf="@+id/Email"
+            app:layout_constraintTop_toBottomOf="@+id/RoleLayout"
+          />
+    </LinearLayout>
+
+    <!-- ASSIGN TO SECTION -->
+
+    <LinearLayout
+        android:id="@+id/AssignToLayout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toBottomOf="@+id/DeadLineLayout">
+
+
+        <TextView
+            android:id="@+id/AssignToLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:text="Assign To"
+            android:textSize="18sp"
+            android:textColor="#3498DB"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/DeadLineLayout"/>
+
+
+        <Spinner
+            android:id="@+id/AssignToPicker"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            app:layout_constraintLeft_toRightOf="@+id/AssignToLabel"
+            app:layout_constraintTop_toBottomOf="@+id/DeadLineLayout"
+            />
+    </LinearLayout>
+
+    <!-- ADD NEW TASK BUTTON SECTION -->
+    <Button
+        android:id="@+id/button3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Add New Task"
+        android:layout_marginTop="50dp"
+        android:background="#F4D03F"
+        android:textColor="@android:color/white"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/AssignToLayout"/>
 </android.support.constraint.ConstraintLayout>
