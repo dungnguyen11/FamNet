@@ -1,4 +1,6 @@
-package com.famnet.famnet;
+package com.famnet.famnet.Model;
+
+import com.famnet.famnet.User;
 
 import java.util.Date;
 

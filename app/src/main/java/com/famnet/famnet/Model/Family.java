@@ -1,4 +1,6 @@
-package com.famnet.famnet;
+package com.famnet.famnet.Model;
+
+import com.famnet.famnet.User;
 
 /**
  * Created by DungNguyen on 11/21/17.
