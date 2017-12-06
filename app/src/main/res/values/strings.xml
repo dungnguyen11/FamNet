@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">FamNet</string>
+    <string name="task_name">Task Name</string>
+    <string name="task_reward">Reward</string>
+    <string name="task_description">Description</string>
+    <string name="task_deadline">Deadline</string>
+    <string name="task_create">Create Task!</string>
 </resources>
