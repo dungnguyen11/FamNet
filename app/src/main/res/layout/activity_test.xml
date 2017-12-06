@@ -1,10 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="8dp"
     tools:context="com.famnet.famnet.TestActivity">
 
-</android.support.constraint.ConstraintLayout>
+    <Button
+        android:layout_width="match_parent"
+        android:id="@+id/account_activity_button"
+        android:text="account activity"
+        android:layout_height="wrap_content"/>
+    <Button
+        android:layout_width="match_parent"
+        android:text="chat activity"
+        android:id="@+id/chat_activity_button"
+        android:layout_height="wrap_content"/>
+    <Button
+        android:layout_width="match_parent"
+        android:text="new task activity"
+        android:id="@+id/new_task_activity_button"
+        android:layout_height="wrap_content"/>
+    <Button
+        android:layout_width="match_parent"
+        android:text="personal task activity"
+        android:id="@+id/personal_task_activity_button"
+        android:layout_height="wrap_content"/>
+    <Button
+        android:layout_width="match_parent"
+        android:text="tasks activity"
+        android:id="@+id/tasks_activity_button"
+        android:layout_height="wrap_content"/>
+</LinearLayout>
