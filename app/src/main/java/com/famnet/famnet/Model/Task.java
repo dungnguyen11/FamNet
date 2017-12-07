@@ -1,6 +1,5 @@
 package com.famnet.famnet.Model;
 
-import java.util.Date;
 import java.util.UUID;
 
 /**
@@ -12,21 +11,21 @@ public class Task {
     private String name;
     private String description;
     private String reward;
-    private Date deadline;
+    private String deadline;
     private User taker;
 
     public Task(){
         this.id = UUID.randomUUID();
     }
 
-    public Task(String name, String description, Date deadline){
+    public Task(String name, String description, String deadline){
         this.id = UUID.randomUUID();
         this.name = name;
         this.description = description;
         this.deadline = deadline;
     }
 
-    public Task(String name, String description, String reward, Date deadline) {
+    public Task(String name, String description, String reward, String deadline) {
         this.id = UUID.randomUUID();
         this.name = name;
         this.description = description;
@@ -34,7 +33,7 @@ public class Task {
         this.deadline = deadline;
     }
 
-    public Task(String name, String description, String reward, Date deadline, User taker) {
+    public Task(String name, String description, String reward, String deadline, User taker) {
         this.id = UUID.randomUUID();
         this.name = name;
         this.description = description;
@@ -71,11 +70,11 @@ public class Task {
         this.reward = reward;
     }
 
-    public Date getDeadline() {
+    public String getDeadline() {
         return deadline;
     }
 
-    public void setDeadline(Date deadline) {
+    public void setDeadline(String deadline) {
         this.deadline = deadline;
     }
 

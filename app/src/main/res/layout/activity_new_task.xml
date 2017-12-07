@@ -3,45 +3,47 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="8dp"
-    android:layout_height="match_parent">
+    android:padding="8dp">
+
     <EditText
         android:id="@+id/task_name_text_view"
-        android:hint="@string/task_name"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:hint="@string/task_name"/>
 
     <EditText
         android:id="@+id/task_reward_text_view"
-        android:hint="@string/task_reward"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:hint="@string/task_reward"/>
 
     <EditText
-        android:layout_width="match_parent"
-        android:lines="5"
-        android:hint="@string/task_description"
         android:id="@+id/task_description_text_view"
-        android:layout_height="wrap_content"/>
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/task_description"
+        android:lines="5"/>
 
     <EditText
         android:id="@+id/task_deadline_text_view"
-        android:hint="@string/task_deadline"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:hint="@string/task_deadline"/>
 
     <Spinner
         android:layout_width="match_parent"
+        android:id="@+id/assign_to_spinner"
         android:layout_height="wrap_content">
 
     </Spinner>
 
     <Button
         android:id="@+id/task_create_button"
-        android:text="@string/task_create"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:text="@string/task_create"/>
 
 
 </LinearLayout>
