@@ -7,7 +7,7 @@ import java.util.UUID;
  */
 
 public class Task {
-    private UUID id;
+    private String id;
     private String name;
     private String description;
     private String reward;
@@ -15,18 +15,18 @@ public class Task {
     private User taker;
 
     public Task(){
-        this.id = UUID.randomUUID();
+        this.id = UUID.randomUUID().toString();
     }
 
     public Task(String name, String description, String deadline){
-        this.id = UUID.randomUUID();
+        this.id = UUID.randomUUID().toString();
         this.name = name;
         this.description = description;
         this.deadline = deadline;
     }
 
     public Task(String name, String description, String reward, String deadline) {
-        this.id = UUID.randomUUID();
+        this.id = UUID.randomUUID().toString();
         this.name = name;
         this.description = description;
         this.reward = reward;
@@ -34,7 +34,7 @@ public class Task {
     }
 
     public Task(String name, String description, String reward, String deadline, User taker) {
-        this.id = UUID.randomUUID();
+        this.id = UUID.randomUUID().toString();
         this.name = name;
         this.description = description;
         this.reward = reward;
@@ -42,7 +42,7 @@ public class Task {
         this.taker = taker;
     }
 
-    public UUID getId() {
+    public String getId() {
         return id;
     }
 

@@ -8,6 +8,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.famnet.famnet.Model.Task;
+import com.famnet.famnet.Model.User;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -32,6 +33,7 @@ public class NewTaskActivity extends AppCompatActivity {
         taskRewardTextView = findViewById(R.id.new_task_reward_text_view);
         taskDescriptionTextView = findViewById(R.id.new_task_description_text_view);
         taskDeadlineTextView = findViewById(R.id.new_task_deadline_text_view);
+        //TODO: implement spinner for assign to
         assignToSpinner = findViewById(R.id.assign_to_spinner);
         createButton = findViewById(R.id.task_create_button);
 
@@ -45,7 +47,9 @@ public class NewTaskActivity extends AppCompatActivity {
                 //Create new task with information from views, and add to the database
                 Task task = new Task(taskNameTextView.getText().toString(),
                         taskDescriptionTextView.getText().toString(),
-                        taskDeadlineTextView.getText().toString());
+                        taskRewardTextView.getText().toString(),
+                        taskDeadlineTextView.getText().toString(),
+                        (User) assignToSpinner.getSelectedItem());
                 tasks.child(task.getId().toString()).setValue(task);
                 finish();
 //                createButton.setVisibility(View.INVISIBLE);
