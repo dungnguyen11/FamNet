@@ -8,26 +8,26 @@
     android:padding="8dp">
 
     <EditText
-        android:id="@+id/task_name_text_view"
+        android:id="@+id/new_task_name_text_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/task_name"/>
 
     <EditText
-        android:id="@+id/task_reward_text_view"
+        android:id="@+id/new_task_reward_text_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/task_reward"/>
 
     <EditText
-        android:id="@+id/task_description_text_view"
+        android:id="@+id/new_task_description_text_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/task_description"
         android:lines="5"/>
 
     <EditText
-        android:id="@+id/task_deadline_text_view"
+        android:id="@+id/new_task_deadline_text_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/task_deadline"/>

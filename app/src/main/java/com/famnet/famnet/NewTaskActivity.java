@@ -28,10 +28,10 @@ public class NewTaskActivity extends AppCompatActivity {
         setContentView(R.layout.activity_new_task);
 
         //Initialize view
-        taskNameTextView = findViewById(R.id.task_name_text_view);
-        taskRewardTextView = findViewById(R.id.task_reward_text_view);
-        taskDescriptionTextView = findViewById(R.id.task_description_text_view);
-        taskDeadlineTextView = findViewById(R.id.task_deadline_text_view);
+        taskNameTextView = findViewById(R.id.new_task_name_text_view);
+        taskRewardTextView = findViewById(R.id.new_task_reward_text_view);
+        taskDescriptionTextView = findViewById(R.id.new_task_description_text_view);
+        taskDeadlineTextView = findViewById(R.id.new_task_deadline_text_view);
         assignToSpinner = findViewById(R.id.assign_to_spinner);
         createButton = findViewById(R.id.task_create_button);
 
