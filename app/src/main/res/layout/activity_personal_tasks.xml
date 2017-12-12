@@ -7,4 +7,67 @@
     android:layout_height="match_parent"
     tools:context="com.famnet.famnet.PersonalTasksActivity">
 
+    <!-- ADD NEW TASK SECTION -->
+
+
+
+        <LinearLayout
+            android:id="@+id/LayoutViewBoard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/textViewBoard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Personal Tasks Board"
+                android:textColor="#F39C12"
+                android:textSize="20sp"/>
+
+            <ListView
+                android:id="@+id/ViewBoard"
+                android:layout_width="match_parent"
+                android:scrollbars="vertical"
+                android:layout_height="200dp"
+                />
+
+        </LinearLayout>
+
+
+
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintTop_toBottomOf="@+id/LayoutViewBoard">
+            <TextView
+                android:id="@+id/textViewTaking"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Tasks On Working"
+                android:textColor="#27AE60"
+                android:textSize="20sp"
+                />
+            <ListView
+                android:id="@+id/listViewTaking"
+                android:layout_width="match_parent"
+                android:scrollbars="vertical"
+                android:layout_height="200dp" />
+
+        </LinearLayout>
+
+
+
+    <ImageView
+        android:id="@+id/AddMember"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        app:srcCompat="@drawable/add_new_task_button"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toTopOf="parent"
+        android:onClick="onClickAddNewTask"/>
+
 </android.support.constraint.ConstraintLayout>
