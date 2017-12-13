@@ -1,10 +1,15 @@
 package com.famnet.famnet;
 
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.support.design.widget.BottomNavigationView;
+
+import com.famnet.famnet.Model.Task;
 
 public class TestActivity extends AppCompatActivity {
 
@@ -60,6 +65,33 @@ public class TestActivity extends AppCompatActivity {
             }
         });
 
+        //Navigation bar
+        BottomNavigationView navigationView = findViewById(R.id.bottom_navigation);
+        navigationView.setSelectedItemId(R.id.navigation_chat);
+        navigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()){
+                    case R.id.navigation_chat:
+                        Intent intent1 = new Intent(TestActivity.this, ChatActivity.class);
+                        startActivity(intent1);
+                        break;
+                    case R.id.navigation_tasks:
+                        Intent intent2 = new Intent(TestActivity.this, TasksActivity.class);
+                        startActivity(intent2);
+                        break;
+                    case R.id.navigation_personal_task:
+                        Intent intent3 = new Intent(TestActivity.this, PersonalTasksActivity.class);
+                        startActivity(intent3);
+                        break;
+                    case R.id.navigation_account:
+                        Intent intent4 = new Intent(TestActivity.this, AccountActivity.class);
+                        startActivity(intent4);
+                        break;
+                }
+                return false;
+            }
+        });
 
 
     }

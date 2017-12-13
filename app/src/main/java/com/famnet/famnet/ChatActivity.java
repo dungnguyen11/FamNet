@@ -1,7 +1,11 @@
 package com.famnet.famnet;
 
+import android.content.Intent;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -64,8 +68,8 @@ public class ChatActivity extends AppCompatActivity {
                     mMessages.setText(mMessages.getText().toString() + "\n" +
                             chat.getName() + " " + chat.getText());
 
-                    Toast.makeText(ChatActivity.this, "New message: " +
-                            chat.getText(), Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(ChatActivity.this, "New message: " +
+//                            chat.getText(), Toast.LENGTH_SHORT).show();
                 }
 
                 @Override
@@ -79,6 +83,32 @@ public class ChatActivity extends AppCompatActivity {
             };
         }
         mMessagesDatabaseReference.addChildEventListener(mChildEventListener);
+
+        //Navigation bar
+        BottomNavigationView navigationView = findViewById(R.id.bottom_navigation);
+        navigationView.setSelectedItemId(R.id.navigation_chat);
+        navigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()){
+                    case R.id.navigation_chat:
+                        break;
+                    case R.id.navigation_tasks:
+                        Intent intent2 = new Intent(ChatActivity.this, TasksActivity.class);
+                        startActivity(intent2);
+                        break;
+                    case R.id.navigation_personal_task:
+                        Intent intent3 = new Intent(ChatActivity.this, PersonalTasksActivity.class);
+                        startActivity(intent3);
+                        break;
+                    case R.id.navigation_account:
+                        Intent intent4 = new Intent(ChatActivity.this, AccountActivity.class);
+                        startActivity(intent4);
+                        break;
+                }
+                return false;
+            }
+        });
     }
 
 }
