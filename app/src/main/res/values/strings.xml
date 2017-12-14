@@ -6,4 +6,8 @@
     <string name="task_deadline">Deadline</string>
     <string name="task_create">Create Task!</string>
     <string name="task_take">Take</string>
+    <string name="navigation_chat">Chat</string>
+    <string name="navigation_tasks">Tasks</string>
+    <string name="navigation_personal_tasks">Personal</string>
+    <string name="navigation_account">Account</string>
 </resources>
