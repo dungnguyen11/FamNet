@@ -10,6 +10,7 @@ import android.view.View;
 
 public class PersonalTasksActivity extends AppCompatActivity {
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,6 +42,7 @@ public class PersonalTasksActivity extends AppCompatActivity {
             }
         });
     }
+
     ///CLICK ON ADD NEW TASK BUTTON
     public void onClickAddNewTask(View view) {
         Intent intent = new Intent(this, NewTaskActivity.class);

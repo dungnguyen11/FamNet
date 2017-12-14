@@ -1,77 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context="com.famnet.famnet.PersonalTasksActivity">
 
-    <!-- ADD NEW TASK SECTION -->
-        <LinearLayout
-            android:id="@+id/LayoutViewBoard"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical" >
-
-            <TextView
-                android:id="@+id/textViewBoard"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Personal Tasks Board"
-                android:textColor="#F39C12"
-                android:textSize="20sp"/>
-
-            <!--<RecyclerView-->
-                <!--android:id="@+id/ViewBoard"-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:scrollbars="vertical"-->
-                <!--android:layout_height="200dp"-->
-                <!--/>-->
-
-        </LinearLayout>
-
-
-
-
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintTop_toBottomOf="@id/LayoutViewBoard">
-            <TextView
-                android:id="@+id/textViewTaking"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Tasks On Working"
-                android:textColor="#27AE60"
-                android:textSize="20sp"
-                />
-            <!--<RecyclerView-->
-                <!--android:id="@+id/listViewTaking"-->
-                <!--android:layout_width="match_parent"-->
-                <!--android:scrollbars="vertical"-->
-                <!--android:layout_height="200dp" />-->
-
-        </LinearLayout>
-
+    <android.support.v7.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars="vertical"
+        android:layout_weight="8"
+        android:id="@+id/recycler_view_personal_tasks"/>
 
 
     <ImageView
         android:id="@+id/AddMember"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/bottom_navigation"
+        android:layout_weight="1"
+        android:layout_width="wrap_content"
+        android:layout_gravity="right|bottom"
+        android:layout_height="wrap_content"
+        android:src="@mipmap/ic_add_circle_black_48dp"
         android:onClick="onClickAddNewTask"/>
 
     <android.support.design.widget.BottomNavigationView
         android:id="@+id/bottom_navigation"
         android:layout_width="match_parent"
+        android:layout_weight="1"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="parent"
+        android:layout_gravity="bottom"
         android:background="?android:attr/windowBackground"
         app:menu="@menu/navigation" />
-
-</android.support.constraint.ConstraintLayout>
+</LinearLayout>

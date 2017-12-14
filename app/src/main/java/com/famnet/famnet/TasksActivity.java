@@ -13,7 +13,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,11 +21,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.GenericTypeIndicator;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,7 +40,7 @@ public class TasksActivity extends AppCompatActivity {
         setContentView(R.layout.activity_tasks);
 
         //Recycler View
-        mRecyclerView = findViewById(R.id.recycler_view); //Initialize
+        mRecyclerView = findViewById(R.id.recycler_view_tasks); //Initialize
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this)); //set LayoutManager
 
         //TODO: Read tasks from Firebase to update real tasks
