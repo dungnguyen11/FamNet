@@ -9,10 +9,15 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Filter;
+import android.widget.Filterable;
+import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,7 +36,7 @@ public class TasksActivity extends AppCompatActivity {
     private String TAG = "TasksActivity";
 
     private RecyclerView mRecyclerView;
-    private RecyclerView.Adapter mTaskAdapter;
+    private TaskAdapter mTaskAdapter;
     private List<Task> mTaskBoard;
 
     @Override
@@ -159,7 +164,7 @@ public class TasksActivity extends AppCompatActivity {
     }
 
     //Adapter class for RecyclerView
-    public class TaskAdapter extends RecyclerView.Adapter<TaskHolder> {
+    public class TaskAdapter extends RecyclerView.Adapter<TaskHolder> implements Filterable {
 
         private List<Task> mTasks;
 
@@ -184,8 +189,76 @@ public class TasksActivity extends AppCompatActivity {
         public int getItemCount() {
             return mTasks.size();
         }
+
+
+
+
+
+// SEARCH TASKS BEGINS HERE
+
+        //GET FILTER METHOD
+        @Override
+        public Filter getFilter() {
+
+
+            return new Filter() {
+                @Override
+                protected FilterResults performFiltering(CharSequence constraint) {
+                    ArrayList<Task> filteredResults;
+                    if (constraint == null || constraint.length() == 0) {
+                        filteredResults = (ArrayList<Task>) mTasks;
+                    } else {
+                        filteredResults = getFilteredResults(constraint.toString().toLowerCase());
+                    }
+
+                    FilterResults results = new FilterResults();
+                    results.values = filteredResults;
+
+                    return results;
+                }
+
+                @Override
+                protected void publishResults(CharSequence constraint, FilterResults results) {
+                    mTasks = (ArrayList<Task>) results.values;
+                    TaskAdapter.this.notifyDataSetChanged();
+                }
+            };
+        }
+
+        protected ArrayList<Task> getFilteredResults(String constraint) {
+            ArrayList<Task> results = new ArrayList<>();
+
+            for (Task task : mTasks) {
+                if (task.getName().toLowerCase().contains(constraint)) {
+                    results.add(task);
+                }
+            }
+            return results;
+        }
     }
 
+    //SEARCH METHOD
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.search_menu, menu);
+        MenuItem item = menu.findItem(R.id.action_search);
 
+        SearchView searchView = (SearchView)item.getActionView();
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                mTaskAdapter.getFilter().filter(newText);
+                return false;
+            }
+        });
+        return super.onCreateOptionsMenu(menu);
+    }
+//THE END OF SEARCH TASKS
 
 }
