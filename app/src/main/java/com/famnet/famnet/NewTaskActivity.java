@@ -1,5 +1,8 @@
 package com.famnet.famnet;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -55,13 +58,24 @@ public class NewTaskActivity extends AppCompatActivity {
                         taskDeadlineTextView.getText().toString(),
                         (User) assignToSpinner.getSelectedItem());
                 tasks.child(task.getId().toString()).setValue(task);
-                finish();
+
+                Intent intent = new Intent();
+                PendingIntent pendingIntent = PendingIntent.getActivity(NewTaskActivity.this,0, intent, 0);
+                Notification noti = new Notification.Builder(NewTaskActivity.this)
+                    .setTicker("New Task")
+                        .setContentTitle("New Task Created")
+                        .setContentText("Someone just created a new task. Check it now !")
+                        .setSmallIcon(R.drawable.notification)
+                        .setContentIntent(pendingIntent).getNotification();
+
+                noti.flags = Notification.FLAG_AUTO_CANCEL;
+                NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+                notificationManager.notify(0,noti);
+
+
 //                createButton.setVisibility(View.INVISIBLE);
             }
         });
-
-
-
 
 
 
