@@ -99,8 +99,8 @@ public class AccountActivity extends AppCompatActivity {
         mUserSetting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                Intent intent = new Intent(this, SettingActivity.class);
-//                startActivityForResult(intent, RC_SETTING);
+                Intent intent = new Intent(AccountActivity.this, SettingActivity.class);
+                startActivityForResult(intent, RC_SETTING);
             }
         });
 
