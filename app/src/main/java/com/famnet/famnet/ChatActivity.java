@@ -21,38 +21,53 @@ import com.google.firebase.database.FirebaseDatabase;
 
 public class ChatActivity extends AppCompatActivity {
 
-
+    // Views
     private EditText mEditText;
     private Button mSendButton;
-    private TextView mMessages;
-    private String mUsername = "anonymous";
+    private TextView mLeftMessages;
+    private TextView mRightMessages;
+    private String mUsername;
 
+    // Firebase
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mMessagesDatabaseReference;
     private FirebaseAuth mFirebaseAuth;
     private ChildEventListener mChildEventListener;
+
+    // Properties
+    private String leftMessageText;
+    private String rightMessageText;
+    private int count = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
-//        //Check User
-//        mFirebaseAuth = FirebaseAuth.getInstance();
-//        if (mFirebaseAuth.getCurrentUser() == null) {
-//            startActivity(MainActivity.createIntent(this));
-//            finish();
-//            return;
-//        }
+        //Initialize
+            //Views
+        mLeftMessages = findViewById(R.id.messages_left_text_view);
+        mRightMessages = findViewById(R.id.message_right_text_view);
+        mEditText = findViewById(R.id.editText);
+        mSendButton = findViewById(R.id.button2);
 
-
+            //Firebase
+        mFirebaseAuth = FirebaseAuth.getInstance();
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         mMessagesDatabaseReference =
                 mFirebaseDatabase.getReference().child("messages");
 
-        mMessages = (TextView) findViewById(R.id.messages_text);
-        mEditText = (EditText) findViewById(R.id.editText);
-        mSendButton = (Button) findViewById(R.id.button2);
+        mUsername = mFirebaseAuth.getCurrentUser().getDisplayName();
+
+        // Check User
+        mFirebaseAuth = FirebaseAuth.getInstance();
+        if (mFirebaseAuth.getCurrentUser() == null) {
+            startActivity(MainActivity.createIntent(this));
+            finish();
+            return;
+        }
+
+        // Chat implementation
         mSendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -61,11 +76,28 @@ public class ChatActivity extends AppCompatActivity {
 
                 mMessagesDatabaseReference.push().setValue(chat);
 
-                mMessages.setText(mMessages.getText().toString() + "\n" +
-                        mUsername + " " + mEditText.getText().toString());
-                mEditText.setText("");
+                String text = mLeftMessages.getText().toString() + "\n" +
+                                mUsername + " : " +
+                                mEditText.getText().toString();
+
+//                if (count % 2 != 0) {
+//                    leftMessageText = text;
+//                    mLeftMessages.setText(leftMessageText);
+//                } else {
+//                    rightMessageText = text;
+//                    mRightMessages.setText(rightMessageText);
+//                }
+
+                mRightMessages.setText(text);
+
+                mEditText.setText(R.string.empty_string);
+                count++;
+
+//                Toast.makeText(ChatActivity.this, "" + count, Toast.LENGTH_SHORT).show();
             }
         });
+
+
 
         if (mChildEventListener == null) {
             mChildEventListener = new ChildEventListener() {
@@ -74,11 +106,23 @@ public class ChatActivity extends AppCompatActivity {
                     Chat chat =
                             dataSnapshot.getValue(Chat.class);
 
-                    mMessages.setText(mMessages.getText().toString() + "\n" +
-                            chat.getName() + " " + chat.getText());
+                    // Update chat if the sender is different from current user
+                    if (chat.getName() != mUsername) {
+                        String text = mLeftMessages.getText().toString() + "\n" +
+                                chat.getName() + " : " + chat.getText();
+//                        if (count % 2 != 0) {
+//                            leftMessageText = text;
+//                            mLeftMessages.setText(leftMessageText);
+//                        } else {
+//                            rightMessageText = text;
+//                            mRightMessages.setText(rightMessageText);
+//                        }
+                        mLeftMessages.setText(text);
+                    }
 
-//                    Toast.makeText(ChatActivity.this, "New message: " +
-//                            chat.getText(), Toast.LENGTH_SHORT).show();
+                    count++;
+
+//                    Toast.makeText(ChatActivity.this, "" + count, Toast.LENGTH_SHORT).show();
                 }
 
                 @Override
@@ -91,6 +135,7 @@ public class ChatActivity extends AppCompatActivity {
                 public void onCancelled(DatabaseError databaseError) {}
             };
         }
+
         mMessagesDatabaseReference.addChildEventListener(mChildEventListener);
 
         //Navigation bar
