@@ -22,8 +22,10 @@ import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.famnet.famnet.Model.Family;
 import com.famnet.famnet.Model.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -43,14 +45,23 @@ public class TasksActivity extends AppCompatActivity {
 
     //Firebase
     FirebaseAuth mFirebaseAuth;
+    FirebaseDatabase mFirebaseDatabase;
+    FirebaseUser mCurrentUser;
+    DatabaseReference mUsersReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tasks);
 
+        // Firebase
+        mFirebaseAuth = FirebaseAuth.getInstance();
+        mFirebaseDatabase = FirebaseDatabase.getInstance();
+        mUsersReference = mFirebaseDatabase.getReference("Users");
+        mCurrentUser = mFirebaseAuth.getCurrentUser();
 
-        //Check User
+
+        // Check User
         mFirebaseAuth = FirebaseAuth.getInstance();
         if (mFirebaseAuth.getCurrentUser() == null) {
             startActivity(MainActivity.createIntent(this));
@@ -58,13 +69,38 @@ public class TasksActivity extends AppCompatActivity {
             return;
         }
 
+        mUsersReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                // If new user, add information of user to database
+                if (!dataSnapshot.hasChild(mCurrentUser.getUid())) {
+                    Log.d(TAG, "in if");
+                    writeNewUser(mUsersReference,
+                            mCurrentUser.getUid(),
+                            mCurrentUser.getDisplayName(),
+                            mCurrentUser.getEmail(),
+                            null);
+                }
+                //TODO: Could create a big that set family to null
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
+
+
+
         //Recycler View
         mRecyclerView = findViewById(R.id.recycler_view_tasks); //Initialize
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this)); //set LayoutManager
 
         //TODO: Read tasks from Firebase to update real tasks
-//        List<Task> tasksBoard;
-//        mTaskBoard.add(new Task("task1Name", "task1Des", "task1Reward", "task1Deadline"));
 
         //Firebase
         FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -100,16 +136,6 @@ public class TasksActivity extends AppCompatActivity {
             }
         });
 
-//        Log.d("mTaskBoard value check", String.valueOf(mTaskBoard.isEmpty()));
-//        Log.d("mTaskBoard value", mTaskBoard.get(0).getId());
-
-//        if (mTaskBoard != null && !mTaskBoard.isEmpty()) {
-//            updateUI(mTaskBoard);
-//        } else {
-//            Toast.makeText(this, "Failed to read data (outside)", Toast.LENGTH_SHORT).show();
-//        }
-
-
         //Navigation bar
         BottomNavigationView navigationView = findViewById(R.id.bottom_navigation);
         navigationView.setSelectedItemId(R.id.navigation_tasks);
@@ -136,6 +162,13 @@ public class TasksActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+
+    public static void writeNewUser(DatabaseReference usersReference, String userId, String name, String email, Family family){
+        com.famnet.famnet.Model.User user = new com.famnet.famnet.Model.User(userId,name,family,email);
+
+        usersReference.child(userId).setValue(user);
     }
 
     private void updateUI(List<Task> tasks) {

@@ -11,7 +11,7 @@
     <string name="navigation_personal_tasks">Personal</string>
     <string name="navigation_account">Account</string>
     <string name="account_name">Name</string>
-    <string name="account_group">Group</string>
+    <string name="account_family">Family</string>
     <string name="account_role">Role</string>
     <string name="account_email">Email</string>
     <string name="account_password">Password</string>

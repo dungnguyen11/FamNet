@@ -4,18 +4,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.famnet.famnet.Model.Family;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -47,12 +44,6 @@ public class MainActivity extends AppCompatActivity {
 
         //Check if the user already login
         if (mCurrentUser != null){
-            writeNewUser(mUsersReference,
-                    mCurrentUser.getUid(),
-                    mCurrentUser.getDisplayName(),
-                    mCurrentUser.getEmail(),
-                    null);
-
             //Move to signed in app
             startActivity(TasksActivity.createIntent(this));
             finish();
@@ -114,11 +105,6 @@ public class MainActivity extends AppCompatActivity {
         toast.show();
     }
 
-    public static void writeNewUser(DatabaseReference usersReference, String userId, String name, String email, Family family){
-        com.famnet.famnet.Model.User user = new com.famnet.famnet.Model.User(userId,name,family,email);
-
-        usersReference.child(userId).setValue(user);
-    }
 
     public static Intent createIntent(Context context){
         Intent intent = new Intent();
