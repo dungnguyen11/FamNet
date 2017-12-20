@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
@@ -17,16 +18,38 @@ import com.google.firebase.auth.FirebaseAuth;
 
 public class AccountActivity extends AppCompatActivity {
 
+    //Constant
+    public static final int RC_SETTING = 200;
+
+    // Views
+    ImageView mUserSignOut;
+    ImageView mUserPhoto;
+    TextView mUserName;
+    TextView mUserGroup;
+    TextView mUserRole;
+    TextView mUserEmail;
+    ImageView mUserAddMember;
+    ImageView mUserSetting;
+
+
     //Firebase
     FirebaseAuth mFirebaseAuth;
-    ImageView mSignOutImageView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_account);
 
-        mSignOutImageView = findViewById(R.id.sign_out_image_view);
+        // Views
+        mUserSignOut = findViewById(R.id.sign_out_image_view);
+        mUserPhoto = findViewById(R.id.user_photo_image_view);
+        mUserName = findViewById(R.id.user_name_text_view);
+        mUserGroup = findViewById(R.id.user_group_text_view);
+        mUserRole = findViewById(R.id.user_role_text_view);
+        mUserEmail = findViewById(R.id.user_email_text_view);
+        mUserAddMember = findViewById(R.id.user_add_member_image_view);
+        mUserSetting = findViewById(R.id.user_setting_image_view);
 
         //Check User
         mFirebaseAuth = FirebaseAuth.getInstance();
@@ -36,11 +59,48 @@ public class AccountActivity extends AppCompatActivity {
             return;
         }
 
+        // Set up views
+
         //Sign out
-        mSignOutImageView.setOnClickListener(new View.OnClickListener() {
+        mUserSignOut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 signOut();
+            }
+        });
+
+        // User Photo
+
+        // User Name
+        String userName = mFirebaseAuth.getCurrentUser().getDisplayName();
+        if (userName != null) {
+            mUserName.setText(userName);
+        }
+
+        // User Group
+
+        // User Role
+
+        // User Email
+        String userEmail = mFirebaseAuth.getCurrentUser().getEmail();
+        if (userEmail != null) {
+            mUserEmail.setText(userEmail);
+        }
+
+        // User Add Member
+        mUserAddMember.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+
+        // User Setting
+        mUserSetting.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+//                Intent intent = new Intent(this, SettingActivity.class);
+//                startActivityForResult(intent, RC_SETTING);
             }
         });
 
@@ -87,48 +147,5 @@ public class AccountActivity extends AppCompatActivity {
     }
 
 
-    ///CLICK ON LogOut Button
-    public void onClickLogOut(View view){
 
-
-    }
-    ///CLICK ON Profile Edit Edit Button
-    public void onClickProfileImageEdit(View view){
-
-
-    }
-
-    ///CLICK ON Name Edit Button
-    public void onClickNameEdit(View view){
-
-
-    }
-
-    ///CLICK ON GROUP Edit Button
-    public void onClickGroupEdit(View view){
-
-
-    }
-    ///CLICK ON ROLE Edit Button
-    public void onClickRoleEdit(View view){
-
-
-    }
-    ///CLICK ON Email Edit Button
-    public void onClickEmailEdit(View view){
-
-
-    }
-
-    ///CLICK ON Password Edit Button
-    public void onClickPasswordEdit(View view){
-
-
-    }
-
-    ///CLICK ON Password Edit Button
-    public void onClickAddMember(View view){
-
-
-    }
 }
