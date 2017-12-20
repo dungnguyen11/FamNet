@@ -8,13 +8,25 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.google.firebase.auth.FirebaseAuth;
+
 public class PersonalTasksActivity extends AppCompatActivity {
 
+    //Firebase
+    FirebaseAuth mFirebaseAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_personal_tasks);
+
+        //Check User
+        mFirebaseAuth = FirebaseAuth.getInstance();
+        if (mFirebaseAuth.getCurrentUser() == null) {
+            startActivity(MainActivity.createIntent(this));
+            finish();
+            return;
+        }
 
         //Navigation bar
         BottomNavigationView navigationView = findViewById(R.id.bottom_navigation);

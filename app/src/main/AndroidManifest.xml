@@ -10,7 +10,6 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".TasksActivity">
-
         </activity>
         <activity android:name=".PersonalTasksActivity">
         </activity>
@@ -21,6 +20,8 @@
         <activity android:name=".NewTaskActivity">
         </activity>
         <activity android:name=".TestActivity">
+        </activity>
+        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 

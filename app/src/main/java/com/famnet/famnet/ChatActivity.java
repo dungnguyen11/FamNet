@@ -1,18 +1,18 @@
 package com.famnet.famnet;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.famnet.famnet.Model.Chat;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -29,12 +29,21 @@ public class ChatActivity extends AppCompatActivity {
 
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mMessagesDatabaseReference;
+    private FirebaseAuth mFirebaseAuth;
     private ChildEventListener mChildEventListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
+
+//        //Check User
+//        mFirebaseAuth = FirebaseAuth.getInstance();
+//        if (mFirebaseAuth.getCurrentUser() == null) {
+//            startActivity(MainActivity.createIntent(this));
+//            finish();
+//            return;
+//        }
 
 
         mFirebaseDatabase = FirebaseDatabase.getInstance();

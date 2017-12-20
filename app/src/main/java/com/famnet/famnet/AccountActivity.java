@@ -7,13 +7,42 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.Toast;
+
+import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
 
 public class AccountActivity extends AppCompatActivity {
+
+    //Firebase
+    FirebaseAuth mFirebaseAuth;
+    ImageView mSignOutImageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_account);
+
+        mSignOutImageView = findViewById(R.id.sign_out_image_view);
+
+        //Check User
+        mFirebaseAuth = FirebaseAuth.getInstance();
+        if (mFirebaseAuth.getCurrentUser() == null) {
+            startActivity(MainActivity.createIntent(this));
+            finish();
+            return;
+        }
+
+        //Sign out
+        mSignOutImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                signOut();
+            }
+        });
 
         //Navigation bar
         BottomNavigationView navigationView = findViewById(R.id.bottom_navigation);
@@ -40,6 +69,21 @@ public class AccountActivity extends AppCompatActivity {
                 return false;
             }
         });
+    }
+
+    private void signOut() {
+        AuthUI.getInstance().signOut(this)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            startActivity(MainActivity.createIntent(AccountActivity.this));
+                            finish();
+                        } else {
+                            Toast.makeText(AccountActivity.this, "Sign out failed", Toast.LENGTH_SHORT);
+                        }
+                    }
+                });
     }
 
 

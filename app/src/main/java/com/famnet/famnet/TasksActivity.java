@@ -1,5 +1,6 @@
 package com.famnet.famnet;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -22,6 +23,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.famnet.famnet.Model.Task;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -39,10 +41,22 @@ public class TasksActivity extends AppCompatActivity {
     private TaskAdapter mTaskAdapter;
     private List<Task> mTaskBoard;
 
+    //Firebase
+    FirebaseAuth mFirebaseAuth;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tasks);
+
+
+        //Check User
+        mFirebaseAuth = FirebaseAuth.getInstance();
+        if (mFirebaseAuth.getCurrentUser() == null) {
+            startActivity(MainActivity.createIntent(this));
+            finish();
+            return;
+        }
 
         //Recycler View
         mRecyclerView = findViewById(R.id.recycler_view_tasks); //Initialize
@@ -260,5 +274,11 @@ public class TasksActivity extends AppCompatActivity {
         return super.onCreateOptionsMenu(menu);
     }
 //THE END OF SEARCH TASKS
+
+    public static Intent createIntent(Context context){
+        Intent intent = new Intent();
+        intent.setClass(context, TasksActivity.class);
+        return intent;
+    }
 
 }
