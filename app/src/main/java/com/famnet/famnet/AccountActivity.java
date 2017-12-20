@@ -62,7 +62,6 @@ public class AccountActivity extends AppCompatActivity {
         mUserPhoto = findViewById(R.id.user_photo_image_view);
         mUserName = findViewById(R.id.user_name_text_view);
         mUserFamily = findViewById(R.id.user_family_text_view);
-        mUserRole = findViewById(R.id.user_role_text_view);
         mUserEmail = findViewById(R.id.user_email_text_view);
         mUserAddMember = findViewById(R.id.user_add_member_image_view);
         mUserSetting = findViewById(R.id.user_setting_image_view);
@@ -144,6 +143,9 @@ public class AccountActivity extends AppCompatActivity {
 //        Log.d(TAG, "" + user.getName() + ", " + user.getEmail());
 
 
+
+
+
         //Navigation bar
         BottomNavigationView navigationView = findViewById(R.id.bottom_navigation);
         navigationView.setSelectedItemId(R.id.navigation_account);
@@ -172,10 +174,9 @@ public class AccountActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-
-
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        //TODO: take result and update data on activity
     }
 
     private void signOut() {

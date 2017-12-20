@@ -27,7 +27,7 @@
         app:layout_constraintTop_toBottomOf="@+id/user_photo_setting" />
 
     <EditText
-        android:id="@+id/user_group_setting_text"
+        android:id="@+id/user_family_setting_text"
         android:layout_width="351dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
@@ -76,7 +76,7 @@
         android:layout_marginTop="16dp"
         android:text="@string/account_email"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/user_group_setting_text" />
+        app:layout_constraintTop_toBottomOf="@+id/user_family_setting_text" />
 
     <TextView
         android:id="@+id/textView3"
@@ -99,7 +99,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
-        android:id="@+id/editText5"
+        android:id="@+id/user_name_setting"
         android:layout_width="0dp"
         android:layout_height="46dp"
         android:layout_marginEnd="16dp"
@@ -133,4 +133,14 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintGuide_begin="16dp" />
+
+    <Button
+        android:id="@+id/save_setting_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/save_button"
+        app:layout_constraintEnd_toStartOf="@+id/guideline9"
+        app:layout_constraintStart_toStartOf="@+id/guideline10"
+        app:layout_constraintTop_toBottomOf="@+id/user_password_setting_text"/>
 </android.support.constraint.ConstraintLayout>
