@@ -7,26 +7,23 @@ import java.util.UUID;
  */
 
 public class User {
-    private UUID id;
+    private String id;
     private String name;
     private Family family;
-    private String role;
     private String email;
     private Task[] tasks;
 
     public User() {
-        this.id = UUID.randomUUID();
     }
 
-    public User(String name, Family family, String role, String email) {
-        this.id = UUID.randomUUID();
+    public User(String id, String name, Family family, String email) {
+        this.id = id;
         this.name = name;
         this.family = family;
-        this.role = role;
         this.email = email;
     }
 
-    public UUID getId() {
+    public String getId() {
         return id;
     }
 
@@ -44,14 +41,6 @@ public class User {
 
     public void setFamily(Family family) {
         this.family = family;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
     }
 
     public String getEmail() {
