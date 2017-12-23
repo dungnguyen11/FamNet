@@ -4,17 +4,17 @@ package com.famnet.famnet.Model;
  * Created by DungNguyen on 11/21/17.
  */
 
-public class Chat {
+public class Message {
     private String text;
-    private String name;
+    private String sender;
     private String photoUrl;
 
-    public Chat() {
+    public Message() {
     }
 
-    public Chat(String text, String name, String photoUrl) {
+    public Message(String text, String sender, String photoUrl) {
         this.text = text;
-        this.name = name;
+        this.sender = sender;
         this.photoUrl = photoUrl;
     }
 
@@ -25,11 +25,11 @@ public class Chat {
         this.text = text;
     }
 
-    public String getName() {
-        return name;
+    public String getSender() {
+        return sender;
     }
-    public void setName(String name) {
-        this.name = name;
+    public void setSender(String sender) {
+        this.sender = sender;
     }
 
     public String getPhotoUrl() {

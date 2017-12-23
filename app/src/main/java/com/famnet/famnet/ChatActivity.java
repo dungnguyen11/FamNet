@@ -5,138 +5,188 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.famnet.famnet.Model.Chat;
+import com.famnet.famnet.Model.Message;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ChatActivity extends AppCompatActivity {
+
+    // Constant
+    private static final String TAG = "ChatActivity-Debug";
 
     // Views
     private EditText mEditText;
     private Button mSendButton;
-    private TextView mLeftMessages;
-    private TextView mRightMessages;
-    private String mUsername;
+    private RecyclerView mRecyclerView;
+    private MessageAdapter mMessageAdapter;
 
     // Firebase
     private FirebaseDatabase mFirebaseDatabase;
-    private DatabaseReference mMessagesDatabaseReference;
+    private DatabaseReference mMessagesReference;
     private FirebaseAuth mFirebaseAuth;
+    private FirebaseUser mCurrentUser;
     private ChildEventListener mChildEventListener;
 
     // Properties
-    private String leftMessageText;
-    private String rightMessageText;
-    private int count = 0;
+    private String mUsername = "";
+    private List<Message> mMessages;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
-        //Initialize
-            //Views
-        mLeftMessages = findViewById(R.id.messages_left_text_view);
-        mRightMessages = findViewById(R.id.message_right_text_view);
-        mEditText = findViewById(R.id.editText);
-        mSendButton = findViewById(R.id.button2);
+        //Views
+        mEditText = findViewById(R.id.new_chat_text);
+        mSendButton = findViewById(R.id.send_button);
 
-            //Firebase
+        //Firebase
         mFirebaseAuth = FirebaseAuth.getInstance();
         mFirebaseDatabase = FirebaseDatabase.getInstance();
-        mMessagesDatabaseReference =
-                mFirebaseDatabase.getReference().child("messages");
+        mMessagesReference = mFirebaseDatabase.getReference("Messages");
+        mCurrentUser = mFirebaseAuth.getCurrentUser();
 
-        mUsername = mFirebaseAuth.getCurrentUser().getDisplayName();
+        // Properties
+        if (mCurrentUser.getDisplayName() != null) {
+            mUsername = mCurrentUser.getDisplayName();
+        }
+
+        mMessages = new ArrayList<>();
+
 
         // Check User
-        mFirebaseAuth = FirebaseAuth.getInstance();
         if (mFirebaseAuth.getCurrentUser() == null) {
             startActivity(MainActivity.createIntent(this));
             finish();
             return;
         }
 
-        // Chat implementation
-        mSendButton.setOnClickListener(new View.OnClickListener() {
+        //Recycler View
+        mRecyclerView = findViewById(R.id.chat_recyclerView);
+        mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        //TODO: Still having bug when loading Message
+        mMessagesReference.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onClick(View view) {
-                Chat chat = new
-                        Chat(mEditText.getText().toString(), mUsername, null);
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot != null) {
+                    Log.d(TAG, "inside dataChange");
+                    List<Message> tempMessages = new ArrayList<>();
 
-                mMessagesDatabaseReference.push().setValue(chat);
+                    for (DataSnapshot postSnapShot : dataSnapshot.getChildren()) {
+                        Message message = postSnapShot.getValue(Message.class);
+                        Log.d(TAG, "load Message: " + message.getText());
+                        tempMessages.add(message);
+                    }
 
-                String text = mLeftMessages.getText().toString() + "\n" +
-                                mUsername + " : " +
-                                mEditText.getText().toString();
+                    mMessages = tempMessages;
 
-//                if (count % 2 != 0) {
-//                    leftMessageText = text;
-//                    mLeftMessages.setText(leftMessageText);
-//                } else {
-//                    rightMessageText = text;
-//                    mRightMessages.setText(rightMessageText);
-//                }
+                    updateMessages(mMessages);
+                }
+            }
 
-                mRightMessages.setText(text);
-
-                mEditText.setText(R.string.empty_string);
-                count++;
-
-//                Toast.makeText(ChatActivity.this, "" + count, Toast.LENGTH_SHORT).show();
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Toast.makeText(ChatActivity.this, "Failed to read data", Toast.LENGTH_SHORT).show();
             }
         });
 
 
 
-        if (mChildEventListener == null) {
-            mChildEventListener = new ChildEventListener() {
-                @Override
-                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                    Chat chat =
-                            dataSnapshot.getValue(Chat.class);
+        // Message implementation
+        mSendButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!mEditText.getText().toString().equals("")) { // Message cannot be empty
+                    Message message = new Message(mEditText.getText().toString(), mUsername, null);
+                    mMessagesReference.push().setValue(message); // The messages will update because of valueListener of messageReference
 
-                    // Update chat if the sender is different from current user
-                    if (chat.getName() != mUsername) {
-                        String text = mLeftMessages.getText().toString() + "\n" +
-                                chat.getName() + " : " + chat.getText();
-//                        if (count % 2 != 0) {
-//                            leftMessageText = text;
-//                            mLeftMessages.setText(leftMessageText);
-//                        } else {
-//                            rightMessageText = text;
-//                            mRightMessages.setText(rightMessageText);
-//                        }
-                        mLeftMessages.setText(text);
-                    }
-
-                    count++;
-
-//                    Toast.makeText(ChatActivity.this, "" + count, Toast.LENGTH_SHORT).show();
+                    // Delete the sent message
+                    mEditText.setText("");
+//                Toast.makeText(ChatActivity.this, "" + count, Toast.LENGTH_SHORT).show();
                 }
+            }
+        });
 
-                @Override
-                public void onChildChanged(DataSnapshot dataSnapshot, String s) {}
-                @Override
-                public void onChildRemoved(DataSnapshot dataSnapshot) {}
-                @Override
-                public void onChildMoved(DataSnapshot dataSnapshot, String s) {}
-                @Override
-                public void onCancelled(DatabaseError databaseError) {}
-            };
-        }
 
-        mMessagesDatabaseReference.addChildEventListener(mChildEventListener);
+
+//        if (mChildEventListener == null) {
+//            mChildEventListener = new ChildEventListener() {
+//                @Override
+//                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+//                    Message message = dataSnapshot.getValue(Message.class);
+//
+//                    // Update chat if the sender is different from current user
+//                    if (!message.getSender().equals(mUsername)) {
+//                        String text = mLeftMessages.getText().toString() + "\n" +
+//                                chat.getSender() + " : " + chat.getText();
+//                        mLeftMessages.setText(text);
+//                    }
+//
+//
+////                    Toast.makeText(ChatActivity.this, "" + count, Toast.LENGTH_SHORT).show();
+//                }
+//
+//                @Override
+//                public void onChildChanged(DataSnapshot dataSnapshot, String s) {}
+//                @Override
+//                public void onChildRemoved(DataSnapshot dataSnapshot) {}
+//                @Override
+//                public void onChildMoved(DataSnapshot dataSnapshot, String s) {}
+//                @Override
+//                public void onCancelled(DatabaseError databaseError) {}
+//            };
+//        }
+//
+//        mMessagesReference.addChildEventListener(new ChildEventListener() {
+//            @Override
+//            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+//
+//            }
+//
+//            @Override
+//            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+//
+//            }
+//
+//            @Override
+//            public void onChildRemoved(DataSnapshot dataSnapshot) {
+//
+//            }
+//
+//            @Override
+//            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+//
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//
+//            }
+//        });
 
         //Navigation bar
         BottomNavigationView navigationView = findViewById(R.id.bottom_navigation);
@@ -164,5 +214,72 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
     }
+
+
+    // MessageHolder for Recycler View
+
+    public class MessageHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+
+        private Message mMessage;
+        private TextView mLeftChat;
+        private TextView mLeftSender;
+//        private TextView mRightChat;
+//        private TextView mRightSender;
+
+        public MessageHolder(View itemView) {
+            super(itemView);
+            itemView.setOnClickListener(this);
+            mLeftChat = itemView.findViewById(R.id.chat_left_textView);
+            mLeftSender = itemView.findViewById(R.id.chat_sender_left_textView);
+//            mRightChat = itemView.findViewById(R.id.chat_right_textView);
+//            mRightSender = itemView.findViewById(R.id.chat_sender_right_textView);
+        }
+
+        public void bind(Message message) {
+            mMessage = message;
+            mLeftChat.setText(mMessage.getText());
+            mLeftSender.setText(mMessage.getSender());
+        }
+
+        @Override
+        public void onClick(View v) {
+
+        }
+    }
+
+    // ChatAdapter for Recycler View
+
+    public class MessageAdapter extends RecyclerView.Adapter<MessageHolder> {
+
+        List<Message> mMessages;
+
+        public MessageAdapter(List<Message> messages) {
+            mMessages = messages;
+        }
+
+        @Override
+        public MessageHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_message, parent, false);
+            return new MessageHolder(view);
+        }
+
+        @Override
+        public void onBindViewHolder(MessageHolder holder, int position) {
+            Message message = mMessages.get(position);
+            holder.bind(message);
+        }
+
+        @Override
+        public int getItemCount() {
+            Log.d("getItemCount", "Item count: " + mMessages.size());
+            return mMessages.size();
+        }
+    }
+
+    private void updateMessages(List<Message> messages){
+        mMessageAdapter = new MessageAdapter(messages);
+        mRecyclerView.setAdapter(mMessageAdapter);
+    }
+
 
 }

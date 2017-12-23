@@ -75,7 +75,7 @@ public class AccountActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 user = dataSnapshot.getValue(User.class);
-//                Log.d(TAG, "" + user.getName() + ", " + user.getEmail());
+//                Log.d(TAG, "" + user.getSender() + ", " + user.getEmail());
 
                 if (user != null) {
                     // Set up views
@@ -151,7 +151,7 @@ public class AccountActivity extends AppCompatActivity {
             return;
         }
 
-//        Log.d(TAG, "" + user.getName() + ", " + user.getEmail());
+//        Log.d(TAG, "" + user.getSender() + ", " + user.getEmail());
 
 //        mCurrentUser.sendEmailVerification();
 

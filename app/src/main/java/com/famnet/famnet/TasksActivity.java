@@ -39,15 +39,18 @@ public class TasksActivity extends AppCompatActivity {
 
     private String TAG = "TasksActivity";
 
+    // View
     private RecyclerView mRecyclerView;
     private TaskAdapter mTaskAdapter;
-    private List<Task> mTaskBoard;
 
     //Firebase
     FirebaseAuth mFirebaseAuth;
     FirebaseDatabase mFirebaseDatabase;
     FirebaseUser mCurrentUser;
     DatabaseReference mUsersReference;
+
+    // Properties
+    private List<Task> mTaskBoard;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,7 +76,7 @@ public class TasksActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
-                // If new user, add information of user to database
+                // If current user do not have data on Realtime database, add information of user to database
                 if (!dataSnapshot.hasChild(mCurrentUser.getUid())) {
                     Log.d(TAG, "in if");
                     writeNewUser(mUsersReference,
@@ -110,9 +113,6 @@ public class TasksActivity extends AppCompatActivity {
         tasksRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-//                GenericTypeIndicator<ArrayList<Task>> dataType =
-//                        new GenericTypeIndicator<ArrayList<Task>>() {};
-//                ArrayList<Task> tasks = dataSnapshot.getValue(dataType);
                 List<Task> taskList = new ArrayList<>();
 
                 for (DataSnapshot postSnapShot : dataSnapshot.getChildren()) {
