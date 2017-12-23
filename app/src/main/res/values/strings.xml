@@ -19,4 +19,6 @@
     <string name="empty_string"></string>
     <string name="send_button">Send</string>
     <string name="save_button">save</string>
+
+    <string name="new_password">Enter a new password</string>
 </resources>

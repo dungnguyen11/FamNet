@@ -19,6 +19,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -36,7 +37,6 @@ public class AccountActivity extends AppCompatActivity {
     ImageView mUserPhoto;
     TextView mUserName;
     TextView mUserFamily;
-    TextView mUserRole;
     TextView mUserEmail;
     ImageView mUserAddMember;
     ImageView mUserSetting;
@@ -75,11 +75,10 @@ public class AccountActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 user = dataSnapshot.getValue(User.class);
-                Log.d(TAG, "" + user.getName() + ", " + user.getEmail());
+//                Log.d(TAG, "" + user.getName() + ", " + user.getEmail());
 
                 if (user != null) {
                     // Set up views
-
                     //Sign out
                     mUserSignOut.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -94,6 +93,18 @@ public class AccountActivity extends AppCompatActivity {
                     String userName = user.getName();
                     if (userName != null) {
                         mUserName.setText(userName);
+                        UserProfileChangeRequest profileUpdate = new UserProfileChangeRequest.Builder()
+                                                                .setDisplayName(userName)
+                                                                .build();
+                        mCurrentUser.updateProfile(profileUpdate)
+                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        if (task.isSuccessful()) {
+                                            Log.d(TAG, "User profile updated");
+                                        }
+                                    }
+                                });
                     }
 
                     // User Family
@@ -142,8 +153,7 @@ public class AccountActivity extends AppCompatActivity {
 
 //        Log.d(TAG, "" + user.getName() + ", " + user.getEmail());
 
-
-
+//        mCurrentUser.sendEmailVerification();
 
 
         //Navigation bar
@@ -177,6 +187,7 @@ public class AccountActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         //TODO: take result and update data on activity
+        Log.d(TAG, "Current name: " + mCurrentUser.getDisplayName());
     }
 
     private void signOut() {
