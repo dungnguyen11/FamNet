@@ -133,61 +133,6 @@ public class ChatActivity extends AppCompatActivity {
 
 
 
-//        if (mChildEventListener == null) {
-//            mChildEventListener = new ChildEventListener() {
-//                @Override
-//                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-//                    Message message = dataSnapshot.getValue(Message.class);
-//
-//                    // Update chat if the sender is different from current user
-//                    if (!message.getSender().equals(mUsername)) {
-//                        String text = mLeftMessages.getText().toString() + "\n" +
-//                                chat.getSender() + " : " + chat.getText();
-//                        mLeftMessages.setText(text);
-//                    }
-//
-//
-////                    Toast.makeText(ChatActivity.this, "" + count, Toast.LENGTH_SHORT).show();
-//                }
-//
-//                @Override
-//                public void onChildChanged(DataSnapshot dataSnapshot, String s) {}
-//                @Override
-//                public void onChildRemoved(DataSnapshot dataSnapshot) {}
-//                @Override
-//                public void onChildMoved(DataSnapshot dataSnapshot, String s) {}
-//                @Override
-//                public void onCancelled(DatabaseError databaseError) {}
-//            };
-//        }
-//
-//        mMessagesReference.addChildEventListener(new ChildEventListener() {
-//            @Override
-//            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-//
-//            }
-//
-//            @Override
-//            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-//
-//            }
-//
-//            @Override
-//            public void onChildRemoved(DataSnapshot dataSnapshot) {
-//
-//            }
-//
-//            @Override
-//            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-//
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//
-//            }
-//        });
-
         //Navigation bar
         BottomNavigationView navigationView = findViewById(R.id.bottom_navigation);
         navigationView.setSelectedItemId(R.id.navigation_chat);

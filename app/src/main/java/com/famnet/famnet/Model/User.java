@@ -1,5 +1,7 @@
 package com.famnet.famnet.Model;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -11,7 +13,7 @@ public class User {
     private String name;
     private Family family;
     private String email;
-    private Task[] tasks;
+    private List<Task> tasks;
 
     public User() {
     }
@@ -21,6 +23,7 @@ public class User {
         this.name = name;
         this.family = family;
         this.email = email;
+        tasks = new ArrayList<>();
     }
 
     public String getId() {
@@ -51,11 +54,11 @@ public class User {
         this.email = email;
     }
 
-    public Task[] getTasks() {
+    public List<Task> getTasks() {
         return tasks;
     }
 
-    public void setTasks(Task[] tasks) {
+    public void setTasks(List<Task> tasks) {
         this.tasks = tasks;
     }
 }

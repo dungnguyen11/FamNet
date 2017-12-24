@@ -73,7 +73,6 @@ public class MainActivity extends AppCompatActivity {
         IdpResponse response = IdpResponse.fromResultIntent(data);
         Toast toast;
 
-
         if (resultCode == RESULT_OK){ //Successfully sign in
             // Start signed-in app
             startActivity(TasksActivity.createIntent(this));
@@ -100,7 +99,6 @@ public class MainActivity extends AppCompatActivity {
             }
 
         }
-
         toast = Toast.makeText(this, "Unknown Error", Toast.LENGTH_SHORT);
         toast.show();
     }

@@ -24,8 +24,10 @@ import android.widget.Toast;
 
 import com.famnet.famnet.Model.Family;
 import com.famnet.famnet.Model.Task;
+import com.famnet.famnet.Model.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -39,29 +41,46 @@ public class TasksActivity extends AppCompatActivity {
 
     private String TAG = "TasksActivity";
 
-    // View
+    /**
+     * View variable
+     */
     private RecyclerView mRecyclerView;
     private TaskAdapter mTaskAdapter;
 
-    //Firebase
+    /**
+     * Firebase variable
+     */
     FirebaseAuth mFirebaseAuth;
     FirebaseDatabase mFirebaseDatabase;
     FirebaseUser mCurrentUser;
     DatabaseReference mUsersReference;
+    DatabaseReference mTaskReference;
 
-    // Properties
+    /**
+     * Properties variable
+     */
     private List<Task> mTaskBoard;
+    private User mUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tasks);
 
+
+        //TODO: Create bug when assign family to null
+
+
         // Firebase
         mFirebaseAuth = FirebaseAuth.getInstance();
+        mCurrentUser = mFirebaseAuth.getCurrentUser();
+
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         mUsersReference = mFirebaseDatabase.getReference("Users");
-        mCurrentUser = mFirebaseAuth.getCurrentUser();
+        mTaskReference = mFirebaseDatabase.getReference("Tasks");
+
+        // Properties
+        mUser = new User(mCurrentUser.getUid(), mCurrentUser.getDisplayName(), null, mCurrentUser.getEmail());
 
 
         // Check User
@@ -85,7 +104,10 @@ public class TasksActivity extends AppCompatActivity {
                             mCurrentUser.getEmail(),
                             null);
                 }
-                //TODO: Could create a big that set family to null
+
+
+
+                //TODO: Could create a bug that set family to null
 
             }
 
@@ -96,14 +118,11 @@ public class TasksActivity extends AppCompatActivity {
         });
 
 
-
-
-
-        //Recycler View
+        /**
+         * Recycler View
+         */
         mRecyclerView = findViewById(R.id.recycler_view_tasks); //Initialize
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this)); //set LayoutManager
-
-        //TODO: Read tasks from Firebase to update real tasks
 
         //Firebase
         FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -136,7 +155,9 @@ public class TasksActivity extends AppCompatActivity {
             }
         });
 
-        //Navigation bar
+        /**
+         * Navigation bar
+         */
         BottomNavigationView navigationView = findViewById(R.id.bottom_navigation);
         navigationView.setSelectedItemId(R.id.navigation_tasks);
         navigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -164,7 +185,9 @@ public class TasksActivity extends AppCompatActivity {
 
     }
 
-
+    /**
+     * Private methods
+     */
     public static void writeNewUser(DatabaseReference usersReference, String userId, String name, String email, Family family){
         com.famnet.famnet.Model.User user = new com.famnet.famnet.Model.User(userId,name,family,email);
 
@@ -177,7 +200,9 @@ public class TasksActivity extends AppCompatActivity {
     }
 
 
-    //ViewHolder class for RecyclerView
+    /**
+     * ViewHolder class for RecyclerView
+     */
     public class TaskHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         private Task mTask;
@@ -201,6 +226,18 @@ public class TasksActivity extends AppCompatActivity {
             mTaskNameTextView.setText(mTask.getName());
             mTaskRewardTextView.setText(mTask.getReward());
             mTaskDeadlineTextView.setText(mTask.getDeadline());
+            mTaskTakeButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    mUser.getTasks().add(mTask); // add the task to user's task list
+                    mTaskReference.child(mTask.getId()).removeValue(); // remove task from task board
+                    mUsersReference.child(mCurrentUser.getUid()).setValue(mUser); // Update user
+
+                    //TODO: Update this user
+
+                }
+            });
         }
 
         //TODO:implment onClick()
@@ -210,7 +247,10 @@ public class TasksActivity extends AppCompatActivity {
         }
     }
 
-    //Adapter class for RecyclerView
+
+    /**
+     * Adapter class for RecyclerView
+     */
     public class TaskAdapter extends RecyclerView.Adapter<TaskHolder> implements Filterable {
 
         private List<Task> mTasks;
@@ -246,8 +286,6 @@ public class TasksActivity extends AppCompatActivity {
         //GET FILTER METHOD
         @Override
         public Filter getFilter() {
-
-
             return new Filter() {
                 @Override
                 protected FilterResults performFiltering(CharSequence constraint) {
