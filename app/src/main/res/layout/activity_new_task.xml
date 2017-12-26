@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -26,11 +27,31 @@
         android:hint="@string/task_description"
         android:lines="5"/>
 
-    <EditText
-        android:id="@+id/new_task_deadline_text_view"
-        android:layout_width="match_parent"
+    <LinearLayout
+        android:id="@+id/DeadLineLayout"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/task_deadline"/>
+        android:orientation="horizontal"
+        android:layout_marginTop="16dp"
+        >
+
+
+        <EditText
+            android:id="@+id/new_task_deadline_text_view"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:hint="@string/task_deadline"/>
+        <ImageView
+            android:id="@+id/CalendarIcon"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginLeft="16dp"
+            app:srcCompat="@drawable/calendaricon"
+            app:layout_constraintLeft_toRightOf="@+id/new_task_deadline_text_view" />
+
+
+    </LinearLayout>
+
 
     <Spinner
         android:layout_width="match_parent"
