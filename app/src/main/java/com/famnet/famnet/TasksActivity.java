@@ -273,7 +273,6 @@ public class TasksActivity extends AppCompatActivity {
         public void bind(Task task) {
             mTask = task;
             mTaskNameTextView.setText(mTask.getName());
-<<<<<<< HEAD
             mTaskRewardTextView.setText(mTask.getReward());
             mTaskDeadlineTextView.setText(mTask.getDeadline());
             mTaskTakeButton.setOnClickListener(new View.OnClickListener() {
@@ -295,10 +294,8 @@ public class TasksActivity extends AppCompatActivity {
 
                 }
             });
-=======
             mTaskRewardTextView.setText("Reward: "+ mTask.getReward());
             mTaskDeadlineTextView.setText("Deadline: " + mTask.getDeadline());
->>>>>>> 75a074d8b36f91233b28d6ac975db3b2ef205624
         }
 
         //TODO:implment onClick()
