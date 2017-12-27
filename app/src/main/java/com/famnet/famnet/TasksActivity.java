@@ -27,7 +27,6 @@ import com.famnet.famnet.Model.Task;
 import com.famnet.famnet.Model.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -35,7 +34,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class TasksActivity extends AppCompatActivity {
 
@@ -55,12 +56,14 @@ public class TasksActivity extends AppCompatActivity {
     FirebaseUser mCurrentUser;
     DatabaseReference mUsersReference;
     DatabaseReference mTaskReference;
+    DatabaseReference mUserTaskReference;
 
     /**
      * Properties variable
      */
     private List<Task> mTaskBoard;
     private User mUser;
+    private static int taskCount = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,9 +81,26 @@ public class TasksActivity extends AppCompatActivity {
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         mUsersReference = mFirebaseDatabase.getReference("Users");
         mTaskReference = mFirebaseDatabase.getReference("Tasks");
+        mUserTaskReference = mUsersReference.child(mCurrentUser.getUid()).child("tasks");
 
         // Properties
         mUser = new User(mCurrentUser.getUid(), mCurrentUser.getDisplayName(), null, mCurrentUser.getEmail());
+        mUserTaskReference.addValueEventListener(new ValueEventListener() { //Get number of current tasks of the users
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                List<Task> taskList = new ArrayList<>();
+                for (DataSnapshot post : dataSnapshot.getChildren()) {
+                    Task task = post.getValue(Task.class);
+                    taskList.add(task);
+                }
+                taskCount = taskList.size();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
 
 
         // Check User
@@ -121,7 +141,7 @@ public class TasksActivity extends AppCompatActivity {
         /**
          * Recycler View
          */
-        mRecyclerView = findViewById(R.id.recycler_view_tasks); //Initialize
+        mRecyclerView = findViewById(R.id.tasks_recyclerView); //Initialize
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this)); //set LayoutManager
 
         //Firebase
@@ -133,18 +153,18 @@ public class TasksActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 List<Task> taskList = new ArrayList<>();
+                    for (DataSnapshot postSnapShot : dataSnapshot.getChildren()) {
+                        Task task = postSnapShot.getValue(Task.class);
+                        taskList.add(task);
+                        Log.d("Get data", task.getId());
+                    }
+                    if (!taskList.isEmpty()) {
+                        mTaskBoard = taskList;
+                        Log.d("mTaskBoard", String.valueOf(mTaskBoard.isEmpty()));
+                        Log.d("mTaskBoard value", mTaskBoard.get(0).getId());
 
-                for (DataSnapshot postSnapShot : dataSnapshot.getChildren()) {
-                    Task task = postSnapShot.getValue(Task.class);
-                    taskList.add(task);
-                    Log.d("Get data", task.getId());
-                }
-
-                mTaskBoard = taskList;
-                Log.d("mTaskBoard", String.valueOf(mTaskBoard.isEmpty()));
-                Log.d("mTaskBoard value", mTaskBoard.get(0).getId());
-
-                updateUI(mTaskBoard);
+                        updateUI(mTaskBoard);
+                    }
             }
 
             @Override
@@ -196,6 +216,7 @@ public class TasksActivity extends AppCompatActivity {
 
     private void updateUI(List<Task> tasks) {
         mTaskAdapter = new TaskAdapter(tasks);
+        //TODO: BUG: the last task is not deleted when taking, have to change activity to delete it 
         mRecyclerView.setAdapter(mTaskAdapter);
     }
 
@@ -229,10 +250,17 @@ public class TasksActivity extends AppCompatActivity {
             mTaskTakeButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    //TODO: BUG: sometimes personal tasks get deleted when take new task
+//                    mUser.getTasks().add(mTask); // add the task to user's task list
+//                    mTaskReference.child(mTask.getId()).removeValue(); // remove task from task board
+//                    mUsersReference.child(mCurrentUser.getUid()).setValue(mUser); // Update user
 
-                    mUser.getTasks().add(mTask); // add the task to user's task list
-                    mTaskReference.child(mTask.getId()).removeValue(); // remove task from task board
-                    mUsersReference.child(mCurrentUser.getUid()).setValue(mUser); // Update user
+
+                    Map<String, Object> taskUpdates = new HashMap<>();
+                    taskUpdates.put(String.valueOf(taskCount), mTask);
+//                    taskCount++;
+                    mTaskReference.child(mTask.getId()).removeValue();
+                    mUserTaskReference.updateChildren(taskUpdates);
 
                     //TODO: Update this user
 
@@ -261,7 +289,6 @@ public class TasksActivity extends AppCompatActivity {
 
         @Override
         public TaskHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-//            View view = View.inflate(TasksActivity.this, R.layout.list_item_task, parent);
             View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_task, parent, false);
             return new TaskHolder(view);
         }

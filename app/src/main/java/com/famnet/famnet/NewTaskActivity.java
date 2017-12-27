@@ -74,6 +74,7 @@ public class NewTaskActivity extends AppCompatActivity {
 
 
 //                createButton.setVisibility(View.INVISIBLE);
+                finish();
             }
         });
 
