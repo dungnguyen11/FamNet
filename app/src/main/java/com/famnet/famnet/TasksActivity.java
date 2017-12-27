@@ -216,7 +216,7 @@ public class TasksActivity extends AppCompatActivity {
 
     private void updateUI(List<Task> tasks) {
         mTaskAdapter = new TaskAdapter(tasks);
-        //TODO: BUG: the last task is not deleted when taking, have to change activity to delete it 
+        //TODO: BUG: the last task is not deleted when taking, have to change activity to delete it
         mRecyclerView.setAdapter(mTaskAdapter);
     }
 
