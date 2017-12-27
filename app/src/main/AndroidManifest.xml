@@ -21,14 +21,20 @@
         </activity>
         <activity android:name=".TestActivity">
         </activity>
-        <activity android:name=".MainActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
+        <activity android:name=".MainActivity"
+            android:noHistory="true">
         </activity>
         <activity android:name=".SettingActivity">
+        </activity>
+        <activity
+            android:name=".SplashScreen"
+            android:noHistory="true"
+            android:theme="@android:style/Theme.Holo.NoActionBar.Fullscreen">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
     </application>
 
