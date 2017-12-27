@@ -1,6 +1,10 @@
 package com.famnet.famnet;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -14,10 +18,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.famnet.famnet.Model.Message;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
@@ -26,6 +32,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,8 +47,12 @@ public class ChatActivity extends AppCompatActivity {
     // Views
     private EditText mEditText;
     private Button mSendButton;
+    private ImageButton mPhotoPickerButton;
     private RecyclerView mRecyclerView;
     private MessageAdapter mMessageAdapter;
+
+    //PhotoPicker
+    private static final int RC_PHOTO_PICKER = 1;
 
     // Firebase
     private FirebaseDatabase mFirebaseDatabase;
@@ -47,6 +60,10 @@ public class ChatActivity extends AppCompatActivity {
     private FirebaseAuth mFirebaseAuth;
     private FirebaseUser mCurrentUser;
     private ChildEventListener mChildEventListener;
+
+    //Photo Storage
+    private FirebaseStorage mFirebaseStorage;
+    private StorageReference mChatPhotosReference;
 
     // Properties
     private String mUsername = "";
@@ -61,13 +78,15 @@ public class ChatActivity extends AppCompatActivity {
         //Views
         mEditText = findViewById(R.id.new_chat_text);
         mSendButton = findViewById(R.id.send_button);
+        mPhotoPickerButton = findViewById(R.id.photoPickerButton);
 
         //Firebase
         mFirebaseAuth = FirebaseAuth.getInstance();
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         mMessagesReference = mFirebaseDatabase.getReference("Messages");
         mCurrentUser = mFirebaseAuth.getCurrentUser();
-
+        mFirebaseStorage = FirebaseStorage.getInstance();
+        mChatPhotosReference = mFirebaseStorage.getReference().child("chat_photos");
         // Properties
         if (mCurrentUser.getDisplayName() != null) {
             mUsername = mCurrentUser.getDisplayName();
@@ -105,6 +124,20 @@ public class ChatActivity extends AppCompatActivity {
                     mMessages = tempMessages;
 
                     updateMessages(mMessages);
+                    // Notification
+                    Intent intent = new Intent();
+                    PendingIntent pendingIntent = PendingIntent.getActivity(ChatActivity.this,0, intent, 0);
+                    Notification noti = new Notification.Builder(ChatActivity.this)
+                            .setTicker("Famnet - New Message in Family ChatBoard")
+                            .setContentTitle("Famnet - New Message in Chat Board")
+                            .setContentText("Someone in your family just sent a new message in Chat Board. Check it now !")
+                            .setSmallIcon(R.drawable.notification)
+                            .setContentIntent(pendingIntent).getNotification();
+
+
+                    noti.flags = Notification.FLAG_AUTO_CANCEL;
+                    NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+                    notificationManager.notify(0,noti);
                 }
             }
 
@@ -127,10 +160,22 @@ public class ChatActivity extends AppCompatActivity {
                     // Delete the sent message
                     mEditText.setText("");
 //                Toast.makeText(ChatActivity.this, "" + count, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ChatActivity.this,
+                            "Your message has been sent !", Toast.LENGTH_LONG).show();
                 }
             }
         });
 
+        // ImagePickerButton shows an image picker to upload a image for a message
+        mPhotoPickerButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(Intent.ACTION_GET_CONTENT);
+                i.setType("image/jpeg");
+                i.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
+                startActivityForResult(Intent.createChooser(i, "Complete action using"), RC_PHOTO_PICKER);
+            }
+        });
 
 
         //Navigation bar
@@ -189,6 +234,32 @@ public class ChatActivity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
 
+        }
+
+
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == RC_PHOTO_PICKER && resultCode == RESULT_OK) {
+            Uri imageUri = data.getData();
+
+            //get the reference to stored file at database
+            StorageReference photoReference = mChatPhotosReference.child(imageUri.getLastPathSegment());
+
+            //upload file to firebase
+            photoReference.putFile(imageUri).addOnSuccessListener(this, new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                    Message message = new Message(null, mUsername, downloadUrl.toString());
+                    mMessagesReference.push().setValue(message);
+                    Toast.makeText(ChatActivity.this,
+                            "Your Image Sent", Toast.LENGTH_LONG).show();
+
+                }
+            });
         }
     }
 

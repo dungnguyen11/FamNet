@@ -1,5 +1,7 @@
 package com.famnet.famnet;
 
+import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -11,13 +13,19 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.famnet.famnet.Model.Task;
 import com.famnet.famnet.Model.User;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.Calendar;
 
 public class NewTaskActivity extends AppCompatActivity {
 
@@ -28,7 +36,14 @@ public class NewTaskActivity extends AppCompatActivity {
     private TextView taskDeadlineTextView;
     private Spinner assignToSpinner;
     private Button createButton;
+    private EditText Output;
+    private ImageView changeDate;
 
+    private int year;
+    private int month;
+    private int day;
+
+    static final int DATE_PICKER_ID = 111111;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,19 +73,10 @@ public class NewTaskActivity extends AppCompatActivity {
                         taskDeadlineTextView.getText().toString(),
                         (User) assignToSpinner.getSelectedItem());
                 tasks.child(task.getId().toString()).setValue(task);
+                Toast.makeText(NewTaskActivity.this,
+                        "Your new task has been created. Check it now !", Toast.LENGTH_LONG).show();
 
-                Intent intent = new Intent();
-                PendingIntent pendingIntent = PendingIntent.getActivity(NewTaskActivity.this,0, intent, 0);
-                Notification noti = new Notification.Builder(NewTaskActivity.this)
-                    .setTicker("New Task")
-                        .setContentTitle("New Task Created")
-                        .setContentText("Someone just created a new task. Check it now !")
-                        .setSmallIcon(R.drawable.notification)
-                        .setContentIntent(pendingIntent).getNotification();
 
-                noti.flags = Notification.FLAG_AUTO_CANCEL;
-                NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-                notificationManager.notify(0,noti);
 
 
 //                createButton.setVisibility(View.INVISIBLE);
@@ -78,9 +84,69 @@ public class NewTaskActivity extends AppCompatActivity {
             }
         });
 
+        /// DATE INPUT FOR DEADLINE
+        Output = (EditText) findViewById(R.id.new_task_deadline_text_view);
+        changeDate = (ImageView) findViewById(R.id.CalendarIcon);
 
+        // Get current date by calender
+
+        final Calendar c = Calendar.getInstance();
+        year  = c.get(Calendar.YEAR);
+        month = c.get(Calendar.MONTH);
+        day   = c.get(Calendar.DAY_OF_MONTH);
+
+        // Show current date
+
+        Output.setText(new StringBuilder()
+                // Month is 0 based, just add 1
+                .append(month + 1).append("-").append(day).append("-")
+                .append(year).append(" "));
+
+        // Button listener to show date picker dialog
+
+        changeDate.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+
+                // On button click show datepicker dialog
+                showDialog(DATE_PICKER_ID);
+
+            }
+
+        });
 
     }
+    @Override
+    protected Dialog onCreateDialog(int id) {
+        switch (id) {
+            case DATE_PICKER_ID:
 
+                // open datepicker dialog.
+                // set date picker for current date
+                // add pickerListener listner to date picker
+                return new DatePickerDialog(this, pickerListener, year, month,day);
+        }
+        return null;
+    }
+
+    private DatePickerDialog.OnDateSetListener pickerListener = new DatePickerDialog.OnDateSetListener() {
+
+        // when dialog box is closed, below method will be called.
+        @Override
+        public void onDateSet(DatePicker view, int selectedYear,
+                              int selectedMonth, int selectedDay) {
+
+            year  = selectedYear;
+            month = selectedMonth;
+            day   = selectedDay;
+
+            // Show selected date
+            Output.setText(new StringBuilder().append(month + 1)
+                    .append("-").append(day).append("-").append(year)
+                    .append(" "));
+
+        }
+    };
 
 }

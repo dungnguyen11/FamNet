@@ -10,6 +10,7 @@
     tools:layout_editor_absoluteY="81dp">
 
 
+
     <TextView
         android:id="@+id/task_name_text_view"
         android:layout_width="0dp"
