@@ -13,7 +13,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.CheckedTextView;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -159,8 +158,8 @@ public class PersonalTasksActivity extends AppCompatActivity {
         public void bind(Task task) {
             mTask = task;
             mTaskName.setText(mTask.getName());
-            mTaskReward.setText(mTask.getReward());
-            mTaskDeadline.setText(mTask.getDeadline());
+            mTaskReward.setText("Reward: " + mTask.getReward());
+            mTaskDeadline.setText("Description: " + mTask.getDeadline());
             //TODO: Implement this
             mCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
@@ -180,7 +179,7 @@ public class PersonalTasksActivity extends AppCompatActivity {
 
         @Override
         public PersonalTaskHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_personal_task, parent, false);
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.personal_task_row, parent, false);
             return new PersonalTaskHolder(view);
         }
 

@@ -46,7 +46,7 @@ public class ChatActivity extends AppCompatActivity {
 
     // Views
     private EditText mEditText;
-    private Button mSendButton;
+    private ImageButton mSendButton;
     private ImageButton mPhotoPickerButton;
     private RecyclerView mRecyclerView;
     private MessageAdapter mMessageAdapter;
@@ -275,7 +275,7 @@ public class ChatActivity extends AppCompatActivity {
 
         @Override
         public MessageHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_message, parent, false);
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.message_row, parent, false);
             return new MessageHolder(view);
         }
 

@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
-    android:background="@android:color/darker_gray">
+    android:background="@drawable/border">
 
     <TextView
         android:id="@+id/chat_left_textView"
@@ -18,7 +18,7 @@
         android:layout_marginTop="8dp"
         android:text="TextView"
         android:textColor="@android:color/black"
-        android:textSize="24sp"
+        android:textSize="18sp"
         app:layout_constraintBottom_toTopOf="@+id/chat_sender_left_textView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -32,7 +32,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:text="TextView"
-        android:textSize="16sp"
+        android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"

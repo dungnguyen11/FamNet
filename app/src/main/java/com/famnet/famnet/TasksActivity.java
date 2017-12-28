@@ -308,7 +308,7 @@ public class TasksActivity extends AppCompatActivity {
 
         @Override
         public TaskHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_task, parent, false);
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.task_row, parent, false);
             return new TaskHolder(view);
         }
 

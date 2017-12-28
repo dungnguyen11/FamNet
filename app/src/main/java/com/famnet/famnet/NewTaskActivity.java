@@ -68,8 +68,6 @@ public class NewTaskActivity extends AppCompatActivity {
                 tasks.child(task.getId().toString()).setValue(task);
                 Toast.makeText(NewTaskActivity.this,
                         "Your new task has been created. Check it now !", Toast.LENGTH_LONG).show();
-
-//                createButton.setVisibility(View.INVISIBLE);
                 finish();
             }
         });

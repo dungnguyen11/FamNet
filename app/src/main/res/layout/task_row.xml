@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/linearLayout3"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_margin="8dp"
     android:background="@drawable/border"
     tools:layout_editor_absoluteY="81dp">
-
 
 
     <TextView
@@ -19,6 +18,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:text="Task Name"
+        android:textColor="#000080"
         android:textSize="32sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toStartOf="@+id/task_take_button"
@@ -33,6 +33,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:text="Task Reward"
+        android:textColor="@android:color/black"
         android:textSize="16sp"
         app:layout_constraintEnd_toStartOf="@+id/task_take_button"
         app:layout_constraintHorizontal_bias="0.0"
@@ -48,6 +49,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:text="Task Deadline"
+        android:textColor="@android:color/black"
         android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/task_take_button"
