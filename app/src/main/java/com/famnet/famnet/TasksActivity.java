@@ -76,7 +76,6 @@ public class TasksActivity extends AppCompatActivity {
 
         //TODO: Create bug when assign family to null
 
-
         // Firebase
         mFirebaseAuth = FirebaseAuth.getInstance();
         mCurrentUser = mFirebaseAuth.getCurrentUser();
@@ -129,7 +128,6 @@ public class TasksActivity extends AppCompatActivity {
                 }
 
 
-
                 //TODO: Could create a bug that set family to null
 
             }
@@ -155,32 +153,24 @@ public class TasksActivity extends AppCompatActivity {
         tasksRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                List<Task> taskList = new ArrayList<>();
-                    for (DataSnapshot postSnapShot : dataSnapshot.getChildren()) {
-                        Task task = postSnapShot.getValue(Task.class);
-                        taskList.add(task);
-                        Log.d("Get data", task.getId());
-                    }
-                    if (!taskList.isEmpty()) {
-                        mTaskBoard = taskList;
-                        Log.d("mTaskBoard", String.valueOf(mTaskBoard.isEmpty()));
-                        Log.d("mTaskBoard value", mTaskBoard.get(0).getId());
-                        updateUI(mTaskBoard);
-                    }
+                List<Task> taskList = new ArrayList<>(); // New List to store task value
+
                 for (DataSnapshot postSnapShot : dataSnapshot.getChildren()) {
                     Task task = postSnapShot.getValue(Task.class);
                     taskList.add(task);
                     Log.d("Get data", task.getId());
                 }
 
-                mTaskBoard = taskList;
-                Log.d("mTaskBoard", String.valueOf(mTaskBoard.isEmpty()));
-                Log.d("mTaskBoard value", mTaskBoard.get(0).getId());
+                if (!taskList.isEmpty()) { // Process if there is task available, none otherwise
+                    mTaskBoard = taskList;
+                    Log.d("mTaskBoard", String.valueOf(mTaskBoard.isEmpty()));
+                    Log.d("mTaskBoard value", mTaskBoard.get(0).getId());
+                    updateUI(mTaskBoard);
+                }
 
-                updateUI(mTaskBoard);
 
                 Intent intent = new Intent();
-                PendingIntent pendingIntent = PendingIntent.getActivity(TasksActivity.this,0, intent, 0);
+                PendingIntent pendingIntent = PendingIntent.getActivity(TasksActivity.this, 0, intent, 0);
                 Notification noti = new Notification.Builder(TasksActivity.this)
                         .setTicker("Famnet New Task")
                         .setContentTitle("Famnet - New Task In Family TaskBoard")
@@ -191,7 +181,7 @@ public class TasksActivity extends AppCompatActivity {
 
                 noti.flags = Notification.FLAG_AUTO_CANCEL;
                 NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-                notificationManager.notify(0,noti);
+                notificationManager.notify(0, noti);
 
             }
 
@@ -211,7 +201,7 @@ public class TasksActivity extends AppCompatActivity {
         navigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()){
+                switch (item.getItemId()) {
                     case R.id.navigation_chat:
                         Intent intent1 = new Intent(TasksActivity.this, ChatActivity.class);
                         startActivity(intent1);
@@ -236,14 +226,14 @@ public class TasksActivity extends AppCompatActivity {
     /**
      * Private methods
      */
-    public static void writeNewUser(DatabaseReference usersReference, String userId, String name, String email, Family family){
-        com.famnet.famnet.Model.User user = new com.famnet.famnet.Model.User(userId,name,family,email);
-
+    public static void writeNewUser(DatabaseReference usersReference, String userId, String name, String email, Family family) {
+        com.famnet.famnet.Model.User user = new com.famnet.famnet.Model.User(userId, name, family, email);
         usersReference.child(userId).setValue(user);
     }
 
     private void updateUI(List<Task> tasks) {
         mTaskAdapter = new TaskAdapter(tasks);
+        mTaskAdapter.notifyDataSetChanged();
         //TODO: BUG: the last task is not deleted when taking, have to change activity to delete it
         mRecyclerView.setAdapter(mTaskAdapter);
     }
@@ -252,7 +242,7 @@ public class TasksActivity extends AppCompatActivity {
     /**
      * ViewHolder class for RecyclerView
      */
-    public class TaskHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    public class TaskHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private Task mTask;
         private TextView mTaskNameTextView;
@@ -273,8 +263,8 @@ public class TasksActivity extends AppCompatActivity {
         public void bind(Task task) {
             mTask = task;
             mTaskNameTextView.setText(mTask.getName());
-            mTaskRewardTextView.setText(mTask.getReward());
-            mTaskDeadlineTextView.setText(mTask.getDeadline());
+            mTaskRewardTextView.setText("Reward: " + mTask.getReward());
+            mTaskDeadlineTextView.setText("Deadline: " + mTask.getDeadline());
             mTaskTakeButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -289,13 +279,12 @@ public class TasksActivity extends AppCompatActivity {
 //                    taskCount++;
                     mTaskReference.child(mTask.getId()).removeValue();
                     mUserTaskReference.updateChildren(taskUpdates);
+                    mTaskAdapter.notifyDataSetChanged(); // Reload data change
 
                     //TODO: Update this user
 
                 }
             });
-            mTaskRewardTextView.setText("Reward: "+ mTask.getReward());
-            mTaskDeadlineTextView.setText("Deadline: " + mTask.getDeadline());
         }
 
         //TODO:implment onClick()
@@ -335,12 +324,10 @@ public class TasksActivity extends AppCompatActivity {
         }
 
 
-
-
-
 // SEARCH TASKS BEGINS HERE
 
         //GET FILTER METHOD
+        //TODO: BUG: does not show all list again after search
         @Override
         public Filter getFilter() {
             return new Filter() {
@@ -386,7 +373,7 @@ public class TasksActivity extends AppCompatActivity {
         inflater.inflate(R.menu.search_menu, menu);
         MenuItem item = menu.findItem(R.id.action_search);
 
-        SearchView searchView = (SearchView)item.getActionView();
+        SearchView searchView = (SearchView) item.getActionView();
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -403,7 +390,7 @@ public class TasksActivity extends AppCompatActivity {
     }
 //THE END OF SEARCH TASKS
 
-    public static Intent createIntent(Context context){
+    public static Intent createIntent(Context context) {
         Intent intent = new Intent();
         intent.setClass(context, TasksActivity.class);
         return intent;
