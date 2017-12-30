@@ -12,14 +12,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.famnet.famnet.Model.Family;
 import com.famnet.famnet.Model.User;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -30,7 +28,7 @@ public class AccountActivity extends AppCompatActivity {
 
     //Constant
     private static final String TAG = "AccountActivity";
-    public static final int RC_SETTING = 200;
+    public static final int REQUEST_SETTING = 200;
 
     // Views
     ImageView mUserSignOut;
@@ -43,10 +41,10 @@ public class AccountActivity extends AppCompatActivity {
 
 
     //Firebase
-    FirebaseAuth mFirebaseAuth;
-    FirebaseDatabase mFirebaseDatabase;
+    FirebaseAuth mAuth;
+    FirebaseDatabase mDatabase;
     FirebaseUser mCurrentUser;
-    DatabaseReference mCurrentUserReference;
+    DatabaseReference mCurrentUserRef;
 
     // Properties
     User user;
@@ -57,85 +55,20 @@ public class AccountActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_account);
 
-        // Views
-        mUserSignOut = findViewById(R.id.sign_out_image_view);
-        mUserPhoto = findViewById(R.id.user_photo_image_view);
-        mUserName = findViewById(R.id.user_name_text_view);
-        mUserFamily = findViewById(R.id.user_family_text_view);
-        mUserEmail = findViewById(R.id.user_email_text_view);
-        mUserAddMember = findViewById(R.id.user_add_member_image_view);
-        mUserSetting = findViewById(R.id.user_setting_image_view);
-
-        // Firebase
-        mFirebaseAuth = FirebaseAuth.getInstance();
-        mCurrentUser = mFirebaseAuth.getCurrentUser();
-        mFirebaseDatabase = FirebaseDatabase.getInstance();
-        mCurrentUserReference = mFirebaseDatabase.getReference("Users/" + mCurrentUser.getUid());
-        mCurrentUserReference.addValueEventListener(new ValueEventListener() {
+        // Firebase init
+        mAuth = FirebaseAuth.getInstance();
+        mCurrentUser = mAuth.getCurrentUser();
+        mDatabase = FirebaseDatabase.getInstance();
+        mCurrentUserRef = mDatabase.getReference("Users/" + mCurrentUser.getUid());
+        mCurrentUserRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                user = dataSnapshot.getValue(User.class);
-//                Log.d(TAG, "" + user.getSender() + ", " + user.getEmail());
-
-                if (user != null) {
-                    // Set up views
-                    //Sign out
-                    mUserSignOut.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            signOut();
-                        }
-                    });
-
-                    // User Photo
-
-                    // User Name
-                    String userName = user.getName();
-                    if (userName != null) {
-                        mUserName.setText(userName);
-                        UserProfileChangeRequest profileUpdate = new UserProfileChangeRequest.Builder()
-                                                                .setDisplayName(userName)
-                                                                .build();
-                        mCurrentUser.updateProfile(profileUpdate)
-                                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<Void> task) {
-                                        if (task.isSuccessful()) {
-                                            Log.d(TAG, "User profile updated");
-                                        }
-                                    }
-                                });
-                    }
-
-                    // User Family
-                    Family family = user.getFamily();
-                    if (family != null) {
-                        mUserFamily.setText(family.getName());
-                    }
-
-                    // User Email
-                    String userEmail = user.getEmail();
-                    if (userEmail != null) {
-                        mUserEmail.setText(userEmail);
-                    }
-
-                    // User Add Member
-                    mUserAddMember.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-
-                        }
-                    });
-
-                    // User Setting
-                    mUserSetting.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            Intent intent = new Intent(AccountActivity.this, SettingActivity.class);
-                            startActivityForResult(intent, RC_SETTING);
-                        }
-                    });
-                }
+//                user = dataSnapshot.getValue(User.class);
+//                    // User Family
+//                    Family family = user.getFamily();
+//                    if (family != null) {
+//                        mUserFamily.setText(family.getName());
+//                    }
             }
 
             @Override
@@ -151,9 +84,43 @@ public class AccountActivity extends AppCompatActivity {
             return;
         }
 
-//        Log.d(TAG, "" + user.getSender() + ", " + user.getEmail());
+        // Views init
+        mUserSignOut = findViewById(R.id.sign_out_image_view);
+        mUserSignOut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                signOut();
+            }
+        });
 
-//        mCurrentUser.sendEmailVerification();
+        mUserPhoto = findViewById(R.id.user_photo_image_view);
+
+        mUserName = findViewById(R.id.user_name_text_view);
+        mUserName.setText(mCurrentUser.getDisplayName());
+
+        mUserFamily = findViewById(R.id.user_family_text_view);
+
+        mUserEmail = findViewById(R.id.user_email_text_view);
+        mUserEmail.setText(mCurrentUser.getEmail());
+
+        mUserAddMember = findViewById(R.id.user_add_member_image_view);
+        //TODO: Implement add member to family
+        mUserAddMember.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+
+        mUserSetting = findViewById(R.id.user_setting_image_view);
+        mUserSetting.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(AccountActivity.this, SettingActivity.class);
+                startActivityForResult(intent, REQUEST_SETTING);
+            }
+        });
+
 
 
         //Navigation bar
@@ -181,13 +148,14 @@ public class AccountActivity extends AppCompatActivity {
                 return false;
             }
         });
+        Log.i(TAG, "onCreate");
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        //TODO: take result and update data on activity
-        Log.d(TAG, "Current name: " + mCurrentUser.getDisplayName());
+        String name = data.getStringExtra("name");
+        mUserName.setText(name);
     }
 
     private void signOut() {

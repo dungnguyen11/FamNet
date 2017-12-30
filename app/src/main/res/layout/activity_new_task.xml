@@ -41,11 +41,11 @@
         android:layout_marginTop="16dp">
 
 
-        <EditText
+        <TextView
             android:id="@+id/new_task_deadline_text_view"
             android:layout_width="250dp"
             android:layout_height="wrap_content"
-            android:enabled="false"
+            android:textSize="18sp"
             android:textColor="@android:color/black"
             android:hint="@string/task_deadline"/>
         <ImageView

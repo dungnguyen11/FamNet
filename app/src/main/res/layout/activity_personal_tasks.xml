@@ -12,20 +12,19 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:scrollbars="vertical"
-        app:layout_constraintBottom_toTopOf="@+id/AddMember"
+        app:layout_constraintBottom_toTopOf="@+id/add_new_task_ImageView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
 
     <ImageView
-        android:id="@+id/AddMember"
+        android:id="@+id/add_new_task_ImageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginTop="8dp"
-        android:onClick="onClickAddNewTask"
         android:src="@mipmap/ic_add_circle_black_48dp"
         app:layout_constraintBottom_toTopOf="@+id/bottom_navigation"
         app:layout_constraintEnd_toEndOf="@+id/personal_tasks_recyclerView"
@@ -37,7 +36,7 @@
         android:layout_height="wrap_content"
         android:background="?android:attr/windowBackground"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/AddMember"
-        app:layout_constraintTop_toBottomOf="@+id/AddMember"
+        app:layout_constraintEnd_toEndOf="@+id/add_new_task_ImageView"
+        app:layout_constraintTop_toBottomOf="@+id/add_new_task_ImageView"
         app:menu="@menu/navigation" />
 </android.support.constraint.ConstraintLayout>

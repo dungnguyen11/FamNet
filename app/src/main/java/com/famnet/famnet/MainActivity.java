@@ -18,6 +18,7 @@ import com.google.firebase.database.FirebaseDatabase;
 
 public class MainActivity extends AppCompatActivity {
 
+    //Constant
     private static final String TAG = "MainActivity";
     private static final int RC_SIGN_IN = 100;
 
@@ -25,11 +26,10 @@ public class MainActivity extends AppCompatActivity {
     FirebaseAuth mAuth;
     FirebaseDatabase mDatabase;
     FirebaseUser mCurrentUser;
-    DatabaseReference mUsersReference;
+    DatabaseReference mUsersRef;
 
-    // Properties
+    // View
     Button signInButton;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,9 +38,9 @@ public class MainActivity extends AppCompatActivity {
 
         // Firebase
         mAuth = FirebaseAuth.getInstance();
-        mDatabase = FirebaseDatabase.getInstance();
-        mUsersReference = mDatabase.getReference("Users");
         mCurrentUser = mAuth.getCurrentUser();
+        mDatabase = FirebaseDatabase.getInstance();
+        mUsersRef = mDatabase.getReference("Users");
 
         //Check if the user already login
         if (mCurrentUser != null){
@@ -66,7 +66,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         handleSignInResponse(resultCode, data);
-        return;
     }
 
     private void handleSignInResponse(int resultCode, Intent data) {
@@ -79,7 +78,6 @@ public class MainActivity extends AppCompatActivity {
             finish();
             return;
         } else { //Failed to sign in
-
             if (response == null) { //User pressed back button
                 toast = Toast.makeText(this, "Sign in was cancelled", Toast.LENGTH_SHORT);
                 toast.show();
@@ -103,12 +101,14 @@ public class MainActivity extends AppCompatActivity {
         toast.show();
     }
 
-
+    // Public functions
     public static Intent createIntent(Context context){
         Intent intent = new Intent();
         intent.setClass(context, MainActivity.class);
         return intent;
     }
+
+
 
 
 

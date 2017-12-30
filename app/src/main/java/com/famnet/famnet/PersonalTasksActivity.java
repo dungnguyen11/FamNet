@@ -37,21 +37,20 @@ public class PersonalTasksActivity extends AppCompatActivity {
     private static final String TAG = "PersonalTaskActivity";
 
     // View
-    private ImageView newTaskImageView;
+    private ImageView mNewTaskImageView;
     private RecyclerView mPersonalRecyclerView;
     private PersonalTaskAdapter mPersonalTaskAdapter;
 
 
     //Firebase
-    FirebaseAuth mFirebaseAuth;
+    FirebaseAuth mAuth;
     FirebaseDatabase mDatabase;
-    DatabaseReference mUsersPreference;
-    DatabaseReference mTaskListPreference;
+    DatabaseReference mUsersRef;
+    DatabaseReference mTaskListRef;
     FirebaseUser mCurrentUser;
 
     // Properties
-    private User mUser;
-    private List<Task> mPersonalTaskBoard;
+    private List<Task> mPersonalTaskList;
 
 
     @Override
@@ -59,43 +58,50 @@ public class PersonalTasksActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_personal_tasks);
 
-        // Firebase
-        mFirebaseAuth = FirebaseAuth.getInstance();
-        mCurrentUser = mFirebaseAuth.getCurrentUser();
+        // Firebase init
+        mAuth = FirebaseAuth.getInstance();
+        mCurrentUser = mAuth.getCurrentUser();
         mDatabase = FirebaseDatabase.getInstance();
-        mUsersPreference = mDatabase.getReference("Users");
-        mTaskListPreference = mUsersPreference.child(mCurrentUser.getUid()).child("tasks");
-        Log.d(TAG, "tasks: " + mTaskListPreference.toString());
+        mUsersRef = mDatabase.getReference("Users");
+        mTaskListRef = mUsersRef.child(mCurrentUser.getUid()).child("tasks");
 
-        // View
+        // Recycler View init
         mPersonalRecyclerView = findViewById(R.id.personal_tasks_recyclerView);
         mPersonalRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        // Properties
-        mPersonalTaskBoard = new ArrayList<>();
+        mNewTaskImageView = findViewById(R.id.add_new_task_ImageView);
+        mNewTaskImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(PersonalTasksActivity.this, NewTaskActivity.class);
+                startActivity(intent);
+            }
+        });
 
-        //Check User
-        if (mFirebaseAuth.getCurrentUser() == null) {
+
+        // Properties
+        mPersonalTaskList = new ArrayList<>();
+
+        // Check if user already log in, if not,
+        // change user to log in page (MainActivity)
+        if (mAuth.getCurrentUser() == null) {
             startActivity(MainActivity.createIntent(this));
             finish();
-            return;
         }
 
-        mTaskListPreference.addValueEventListener(new ValueEventListener() {
+        // Add listener to Personal Task List to update task when task is taken, or done
+        mTaskListRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 List<Task> personalTaskList = new ArrayList<>();
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                     Task task = postSnapshot.getValue(Task.class);
                     personalTaskList.add(task);
-                    Log.d("PersonalTaskActivity", "Getting data: " + task.getName());
                 }
 
                 // Displaying personal task list
-                Log.d(TAG, "personal task list: " + personalTaskList.toString());
-                mPersonalTaskBoard = personalTaskList;
-                Log.d(TAG, "m personal task list: " + mPersonalTaskBoard.toString());
-                updatePersonalTask(mPersonalTaskBoard);
+                mPersonalTaskList = personalTaskList;
+                updatePersonalTask(mPersonalTaskList);
             }
 
             @Override
@@ -138,6 +144,7 @@ public class PersonalTasksActivity extends AppCompatActivity {
         Log.d(TAG, "In update function");
     }
 
+    // ViewHolder class for RecyclerView
     public class PersonalTaskHolder extends RecyclerView.ViewHolder {
 
         private Task mTask;
@@ -160,7 +167,7 @@ public class PersonalTasksActivity extends AppCompatActivity {
             mTaskName.setText(mTask.getName());
             mTaskReward.setText("Reward: " + mTask.getReward());
             mTaskDeadline.setText("Description: " + mTask.getDeadline());
-            //TODO: Implement this
+            //TODO: Implement checkbox
             mCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -170,6 +177,7 @@ public class PersonalTasksActivity extends AppCompatActivity {
         }
     }
 
+    // Adapter class for RecyclerView
     public class PersonalTaskAdapter extends RecyclerView.Adapter<PersonalTaskHolder> {
         private List<Task> mTasks;
 
@@ -193,12 +201,5 @@ public class PersonalTasksActivity extends AppCompatActivity {
         public int getItemCount() {
             return mTasks.size();
         }
-    }
-
-
-    ///CLICK ON ADD NEW TASK BUTTON
-    public void onClickAddNewTask(View view) {
-        Intent intent = new Intent(this, NewTaskActivity.class);
-        startActivity(intent);
     }
 }

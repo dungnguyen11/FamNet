@@ -20,6 +20,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -42,10 +43,10 @@ public class SettingActivity extends AppCompatActivity {
     Button mSaveButton;
 
     //Firebase
-    FirebaseAuth mFirebaseAuth;
+    FirebaseAuth mAuth;
     FirebaseUser mCurrentUser;
-    FirebaseDatabase mFirebaseDatabase;
-    DatabaseReference mCurrentUserReference;
+    FirebaseDatabase mDatabase;
+    DatabaseReference mCurrentUserRef;
 
     // Properties
     User user;
@@ -56,7 +57,7 @@ public class SettingActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setting);
 
-        // Views
+        // Views init
         mUserName = findViewById(R.id.user_name_setting);
         mUserPhoto = findViewById(R.id.user_photo_setting);
         mUserFamily = findViewById(R.id.user_family_setting_text);
@@ -64,14 +65,14 @@ public class SettingActivity extends AppCompatActivity {
         mUserPassword = findViewById(R.id.user_password_setting_text);
         mSaveButton = findViewById(R.id.save_setting_button);
 
-        // Firebase
-        mFirebaseAuth = FirebaseAuth.getInstance();
-        mCurrentUser = mFirebaseAuth.getCurrentUser();
-        mFirebaseDatabase = FirebaseDatabase.getInstance();
-        mCurrentUserReference = mFirebaseDatabase.getReference("Users").child(mCurrentUser.getUid());
+        // Firebase init
+        mAuth = FirebaseAuth.getInstance();
+        mCurrentUser = mAuth.getCurrentUser();
+        mDatabase = FirebaseDatabase.getInstance();
+        mCurrentUserRef = mDatabase.getReference("Users").child(mCurrentUser.getUid());
 
-        // Set up views
-        mCurrentUserReference.addValueEventListener(new ValueEventListener() {
+        // Get user name, and email
+        mCurrentUserRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 user = dataSnapshot.getValue(User.class);
@@ -96,7 +97,13 @@ public class SettingActivity extends AppCompatActivity {
             }
         });
 
+        // Get new password, if user make input
         mUserPassword.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void afterTextChanged(Editable s) {
+                newPassword = s.toString();
+            }
+
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -105,11 +112,6 @@ public class SettingActivity extends AppCompatActivity {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
 
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                newPassword = s.toString();
             }
         });
 
@@ -131,26 +133,48 @@ public class SettingActivity extends AppCompatActivity {
                                         Toast.makeText(SettingActivity.this, "Update password successfully", Toast.LENGTH_SHORT).show();
                                     } else {
                                         Log.d(TAG, "User password update FAILED");
-                                        Toast.makeText(SettingActivity.this, "Cannot update password", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(SettingActivity.this, "Cannot update password \n Email need to be verify to change password", Toast.LENGTH_SHORT).show();
+                                        // Verify user email if user did not verify
+                                        if (!mCurrentUser.isEmailVerified()) {
+                                            mCurrentUser.sendEmailVerification();
+                                            Toast.makeText(SettingActivity.this, "We just send you an email to verify your email address. \n Please check, and verify your email", Toast.LENGTH_SHORT).show();
+                                        }
                                     }
                                 }
                             });
                 }
 
                 //TODO: implement family
-                HashMap<String, Object> childUpdates = new HashMap<>();
-                childUpdates.put("name", mUserName.getText().toString());
-//                childUpdates.put("family", mUserFamily.getText());
+                // Change user's information on Real-time database
+                HashMap<String, Object> userUpdates = new HashMap<>();
+                userUpdates.put("name", mUserName.getText().toString());
+//                userUpdates.put("family", mUserFamily.getText());
 
-                mCurrentUserReference.updateChildren(childUpdates);
+                mCurrentUserRef.updateChildren(userUpdates);
+
+                // Change user's information on Authentication
+                UserProfileChangeRequest profileUpdate = new UserProfileChangeRequest.Builder()
+                        .setDisplayName(mUserName.getText().toString())
+                        .build();
+
+                mCurrentUser.updateProfile(profileUpdate)
+                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                if (task.isSuccessful()) {
+                                    Log.d(TAG, "User profile updated");
+                                }
+                            }
+                        });
 
                 Intent returnIntent = new Intent(SettingActivity.this, AccountActivity.class);
+                returnIntent.putExtra("name", mUserName.getText().toString());
+
                 setResult(Activity.RESULT_OK, returnIntent);
                 finish();
             }
         });
     }
-
 
 
 }

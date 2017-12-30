@@ -29,7 +29,7 @@ public class NewTaskActivity extends AppCompatActivity {
     private TextView taskDeadlineTextView;
     private Spinner assignToSpinner;
     private Button createButton;
-    private EditText Output;
+    private TextView Output;
     private ImageView changeDate;
 
     private int year;
@@ -65,7 +65,7 @@ public class NewTaskActivity extends AppCompatActivity {
                         taskRewardTextView.getText().toString(),
                         taskDeadlineTextView.getText().toString(),
                         (User) assignToSpinner.getSelectedItem());
-                tasks.child(task.getId().toString()).setValue(task);
+                tasks.child(task.getId()).setValue(task);
                 Toast.makeText(NewTaskActivity.this,
                         "Your new task has been created. Check it now !", Toast.LENGTH_LONG).show();
                 finish();
@@ -87,7 +87,8 @@ public class NewTaskActivity extends AppCompatActivity {
 
         Output.setText(new StringBuilder()
                 // Month is 0 based, just add 1
-                .append(month + 1).append("-").append(day).append("-")
+                .append(day).append("-")
+                .append(month + 1).append("-")
                 .append(year).append(" "));
 
         // Button listener to show date picker dialog
@@ -130,8 +131,10 @@ public class NewTaskActivity extends AppCompatActivity {
             day   = selectedDay;
 
             // Show selected date
-            Output.setText(new StringBuilder().append(month + 1)
-                    .append("-").append(day).append("-").append(year)
+            Output.setText(new StringBuilder()
+                    .append(day).append("-")
+                    .append(month + 1).append("-")
+                    .append(year)
                     .append(" "));
 
         }

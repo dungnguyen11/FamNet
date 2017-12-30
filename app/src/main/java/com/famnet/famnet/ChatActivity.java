@@ -25,7 +25,6 @@ import com.famnet.famnet.Model.Message;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -44,7 +43,7 @@ public class ChatActivity extends AppCompatActivity {
     private static final String TAG = "ChatActivity-Debug";
 
     // Views
-    private EditText mEditText;
+    private EditText mNewMessage;
     private ImageButton mSendButton;
     private ImageButton mPhotoPickerButton;
     private RecyclerView mRecyclerView;
@@ -54,11 +53,10 @@ public class ChatActivity extends AppCompatActivity {
     private static final int RC_PHOTO_PICKER = 1;
 
     // Firebase
-    private FirebaseDatabase mFirebaseDatabase;
+    private FirebaseDatabase mDatabase;
     private DatabaseReference mMessagesReference;
-    private FirebaseAuth mFirebaseAuth;
+    private FirebaseAuth mAuth;
     private FirebaseUser mCurrentUser;
-    private ChildEventListener mChildEventListener;
 
     //Photo Storage
     private FirebaseStorage mFirebaseStorage;
@@ -66,7 +64,7 @@ public class ChatActivity extends AppCompatActivity {
 
     // Properties
     private String mUsername = "";
-    private List<Message> mMessages;
+    private List<Message> mMessageList;
 
 
     @Override
@@ -74,29 +72,28 @@ public class ChatActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
-        //Views
-        mEditText = findViewById(R.id.new_chat_text);
+        //Views init
+        mNewMessage = findViewById(R.id.new_chat_text);
         mSendButton = findViewById(R.id.send_button);
         mPhotoPickerButton = findViewById(R.id.photoPickerButton);
 
         //Firebase
-        mFirebaseAuth = FirebaseAuth.getInstance();
-        mFirebaseDatabase = FirebaseDatabase.getInstance();
-        mMessagesReference = mFirebaseDatabase.getReference("Messages");
-        mCurrentUser = mFirebaseAuth.getCurrentUser();
+        mAuth = FirebaseAuth.getInstance();
+        mDatabase = FirebaseDatabase.getInstance();
+        mMessagesReference = mDatabase.getReference("Messages");
+        mCurrentUser = mAuth.getCurrentUser();
         //TODO: BUG: crash when load this
 //        mFirebaseStorage = FirebaseStorage.getInstance();
 //        mChatPhotosReference = mFirebaseStorage.getReference().child("chat_photos");
+
         // Properties
-        if (mCurrentUser.getDisplayName() != null) {
-            mUsername = mCurrentUser.getDisplayName();
-        }
+        mUsername = mCurrentUser.getDisplayName();
 
-        mMessages = new ArrayList<>();
+        mMessageList = new ArrayList<>();
 
-
-        // Check User
-        if (mFirebaseAuth.getCurrentUser() == null) {
+        // Check if user already log in, if not,
+        // change user to log in page (MainActivity)
+        if (mAuth.getCurrentUser() == null) {
             startActivity(MainActivity.createIntent(this));
             finish();
             return;
@@ -121,12 +118,14 @@ public class ChatActivity extends AppCompatActivity {
                         tempMessages.add(message);
                     }
 
-                    mMessages = tempMessages;
+                    mMessageList = tempMessages;
 
-                    updateMessages(mMessages);
+                    updateMessages(mMessageList);
+
+
                     // Notification
                     Intent intent = new Intent();
-                    PendingIntent pendingIntent = PendingIntent.getActivity(ChatActivity.this,0, intent, 0);
+                    PendingIntent pendingIntent = PendingIntent.getActivity(ChatActivity.this, 0, intent, 0);
                     Notification noti = new Notification.Builder(ChatActivity.this)
                             .setTicker("Famnet - New Message in Family ChatBoard")
                             .setContentTitle("Famnet - New Message in Chat Board")
@@ -137,7 +136,7 @@ public class ChatActivity extends AppCompatActivity {
 
                     noti.flags = Notification.FLAG_AUTO_CANCEL;
                     NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-                    notificationManager.notify(0,noti);
+                    notificationManager.notify(0, noti);
                 }
             }
 
@@ -148,20 +147,18 @@ public class ChatActivity extends AppCompatActivity {
         });
 
 
-
         // Message implementation
         mSendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!mEditText.getText().toString().equals("")) { // Message cannot be empty
-                    Message message = new Message(mEditText.getText().toString(), mUsername, null);
-                    mMessagesReference.push().setValue(message); // The messages will update because of valueListener of messageReference
+                if (!mNewMessage.getText().toString().equals("")) { // Message cannot be empty
+                    Message message = new Message(mNewMessage.getText().toString(), mUsername, null);
+                    mMessagesReference.push().setValue(message); // The messages is uploaded to database
 
-                    // Delete the sent message
-                    mEditText.setText("");
-//                Toast.makeText(ChatActivity.this, "" + count, Toast.LENGTH_SHORT).show();
-                    Toast.makeText(ChatActivity.this,
-                            "Your message has been sent !", Toast.LENGTH_LONG).show();
+                    // Delete the sent message in TextView
+                    mNewMessage.setText("");
+//                    Toast.makeText(ChatActivity.this,
+//                            "Your message has been sent !", Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -184,7 +181,7 @@ public class ChatActivity extends AppCompatActivity {
         navigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()){
+                switch (item.getItemId()) {
                     case R.id.navigation_chat:
                         break;
                     case R.id.navigation_tasks:
@@ -206,8 +203,38 @@ public class ChatActivity extends AppCompatActivity {
     }
 
 
-    // MessageHolder for Recycler View
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
+        if (requestCode == RC_PHOTO_PICKER && resultCode == RESULT_OK) {
+            Uri imageUri = data.getData();
+
+            //get the reference to stored file at database
+            StorageReference photoReference = mChatPhotosReference.child(imageUri.getLastPathSegment());
+
+            //upload file to firebase
+            photoReference.putFile(imageUri).addOnSuccessListener(this, new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                    Message message = new Message(null, mUsername, downloadUrl.toString());
+                    mMessagesReference.push().setValue(message);
+                    Toast.makeText(ChatActivity.this,
+                            "Your Image Sent", Toast.LENGTH_LONG).show();
+
+                }
+            });
+        }
+    }
+
+
+    private void updateMessages(List<Message> messages) {
+        mMessageAdapter = new MessageAdapter(messages);
+        mRecyclerView.setAdapter(mMessageAdapter);
+    }
+
+    // ViewHolder class for Recycler View
     public class MessageHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private Message mMessage;
@@ -235,36 +262,10 @@ public class ChatActivity extends AppCompatActivity {
         public void onClick(View v) {
 
         }
-
-
-    }
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == RC_PHOTO_PICKER && resultCode == RESULT_OK) {
-            Uri imageUri = data.getData();
-
-            //get the reference to stored file at database
-            StorageReference photoReference = mChatPhotosReference.child(imageUri.getLastPathSegment());
-
-            //upload file to firebase
-            photoReference.putFile(imageUri).addOnSuccessListener(this, new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    Uri downloadUrl = taskSnapshot.getDownloadUrl();
-                    Message message = new Message(null, mUsername, downloadUrl.toString());
-                    mMessagesReference.push().setValue(message);
-                    Toast.makeText(ChatActivity.this,
-                            "Your Image Sent", Toast.LENGTH_LONG).show();
-
-                }
-            });
-        }
     }
 
-    // ChatAdapter for Recycler View
 
+    // Adapter class for Recycler View
     public class MessageAdapter extends RecyclerView.Adapter<MessageHolder> {
 
         List<Message> mMessages;
@@ -287,15 +288,7 @@ public class ChatActivity extends AppCompatActivity {
 
         @Override
         public int getItemCount() {
-            Log.d("getItemCount", "Item count: " + mMessages.size());
             return mMessages.size();
         }
     }
-
-    private void updateMessages(List<Message> messages){
-        mMessageAdapter = new MessageAdapter(messages);
-        mRecyclerView.setAdapter(mMessageAdapter);
-    }
-
-
 }

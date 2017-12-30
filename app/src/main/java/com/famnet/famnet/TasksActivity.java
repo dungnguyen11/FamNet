@@ -11,7 +11,6 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -25,7 +24,6 @@ import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.famnet.famnet.Model.Family;
 import com.famnet.famnet.Model.Task;
 import com.famnet.famnet.Model.User;
 import com.google.firebase.auth.FirebaseAuth;
@@ -43,30 +41,28 @@ import java.util.Map;
 
 public class TasksActivity extends AppCompatActivity {
 
+    //Constant
     private String TAG = "TasksActivity";
 
-    /**
-     * View variable
-     */
+    //View
     private RecyclerView mRecyclerView;
     private TaskAdapter mTaskAdapter;
 
-    /**
-     * Firebase variable
-     */
-    FirebaseAuth mFirebaseAuth;
-    FirebaseDatabase mFirebaseDatabase;
+    //Firebase
+    FirebaseAuth mAuth;
+    FirebaseDatabase mDatabase;
     FirebaseUser mCurrentUser;
-    DatabaseReference mUsersReference;
-    DatabaseReference mTaskReference;
-    DatabaseReference mUserTaskReference;
+    DatabaseReference mUsersRef;
+    DatabaseReference mTaskRef;
+    DatabaseReference mCurrentUserTaskRef;
 
-    /**
-     * Properties variable
-     */
-    private List<Task> mTaskBoard;
+    //Properties
+    private List<Task> mTaskList; //Store all tasks in board
     private User mUser;
-    private static int taskCount = 0;
+
+    // Used when user want to take a certain task, we need to know the next index to add a new task
+    // to user's task list
+    private static int taskCountOfCurrentUser = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,18 +72,30 @@ public class TasksActivity extends AppCompatActivity {
 
         //TODO: Create bug when assign family to null
 
-        // Firebase
-        mFirebaseAuth = FirebaseAuth.getInstance();
-        mCurrentUser = mFirebaseAuth.getCurrentUser();
+        // Firebase init
+        mAuth = FirebaseAuth.getInstance();
+        mCurrentUser = mAuth.getCurrentUser();
+        mDatabase = FirebaseDatabase.getInstance();
+        mUsersRef = mDatabase.getReference("Users");
+        mTaskRef = mDatabase.getReference("Tasks");
+        mCurrentUserTaskRef = mUsersRef.child(mCurrentUser.getUid()).child("tasks");
 
-        mFirebaseDatabase = FirebaseDatabase.getInstance();
-        mUsersReference = mFirebaseDatabase.getReference("Users");
-        mTaskReference = mFirebaseDatabase.getReference("Tasks");
-        mUserTaskReference = mUsersReference.child(mCurrentUser.getUid()).child("tasks");
-
-        // Properties
+        // Properties init
         mUser = new User(mCurrentUser.getUid(), mCurrentUser.getDisplayName(), null, mCurrentUser.getEmail());
-        mUserTaskReference.addValueEventListener(new ValueEventListener() { //Get number of current tasks of the users
+        mTaskList = new ArrayList<>();
+
+        // Check if user already log in, if not,
+        // change user to log in page (MainActivity)
+        if (mAuth.getCurrentUser() == null) {
+            startActivity(MainActivity.createIntent(this));
+            finish();
+            return;
+        }
+
+
+
+        //Get number of current tasks of current user
+        mCurrentUserTaskRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 List<Task> taskList = new ArrayList<>();
@@ -95,7 +103,7 @@ public class TasksActivity extends AppCompatActivity {
                     Task task = post.getValue(Task.class);
                     taskList.add(task);
                 }
-                taskCount = taskList.size();
+                taskCountOfCurrentUser = taskList.size();
             }
 
             @Override
@@ -105,33 +113,25 @@ public class TasksActivity extends AppCompatActivity {
         });
 
 
-        // Check User
-        mFirebaseAuth = FirebaseAuth.getInstance();
-        if (mFirebaseAuth.getCurrentUser() == null) {
-            startActivity(MainActivity.createIntent(this));
-            finish();
-            return;
-        }
 
-        mUsersReference.addValueEventListener(new ValueEventListener() {
+
+        // If current user do not have data on Real-time database,
+        // add information of user to the database
+        mUsersRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
-                // If current user do not have data on Realtime database, add information of user to database
+                //TODO: BUG: Create a bug that set family to null
                 if (!dataSnapshot.hasChild(mCurrentUser.getUid())) {
-                    Log.d(TAG, "in if");
-                    writeNewUser(mUsersReference,
-                            mCurrentUser.getUid(),
-                            mCurrentUser.getDisplayName(),
-                            mCurrentUser.getEmail(),
-                            null);
+                    // Create a new user
+                    User user = new User(mCurrentUser.getUid(),
+                                        mCurrentUser.getDisplayName(),
+                                        null,
+                                        mCurrentUser.getEmail());
+                    //Add user to the Real-time database
+                    mUsersRef.child(mCurrentUser.getUid()).setValue(user);
                 }
-
-
-                //TODO: Could create a bug that set family to null
-
             }
-
             @Override
             public void onCancelled(DatabaseError databaseError) {
 
@@ -139,18 +139,12 @@ public class TasksActivity extends AppCompatActivity {
         });
 
 
-        /**
-         * Recycler View
-         */
+        //Recycler View
         mRecyclerView = findViewById(R.id.tasks_recyclerView); //Initialize
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this)); //set LayoutManager
 
-        //Firebase
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        final DatabaseReference tasksRef = database.getReference("Tasks");
-        mTaskBoard = new ArrayList<>();
-
-        tasksRef.addValueEventListener(new ValueEventListener() {
+        // Add listener to update task when new task is added, or taken
+        mTaskRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 List<Task> taskList = new ArrayList<>(); // New List to store task value
@@ -158,17 +152,13 @@ public class TasksActivity extends AppCompatActivity {
                 for (DataSnapshot postSnapShot : dataSnapshot.getChildren()) {
                     Task task = postSnapShot.getValue(Task.class);
                     taskList.add(task);
-                    Log.d("Get data", task.getId());
                 }
 
-                if (!taskList.isEmpty()) { // Process if there is task available, none otherwise
-                    mTaskBoard = taskList;
-                    Log.d("mTaskBoard", String.valueOf(mTaskBoard.isEmpty()));
-                    Log.d("mTaskBoard value", mTaskBoard.get(0).getId());
-                    updateUI(mTaskBoard);
-                }
+                mTaskList = taskList;
+                updateUI(mTaskList);
 
-
+                //TODO: Move this to a function
+                // Notification
                 Intent intent = new Intent();
                 PendingIntent pendingIntent = PendingIntent.getActivity(TasksActivity.this, 0, intent, 0);
                 Notification noti = new Notification.Builder(TasksActivity.this)
@@ -193,9 +183,8 @@ public class TasksActivity extends AppCompatActivity {
             }
         });
 
-        /**
-         * Navigation bar
-         */
+
+        //Navigation bottom
         BottomNavigationView navigationView = findViewById(R.id.bottom_navigation);
         navigationView.setSelectedItemId(R.id.navigation_tasks);
         navigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -223,14 +212,8 @@ public class TasksActivity extends AppCompatActivity {
 
     }
 
-    /**
-     * Private methods
-     */
-    public static void writeNewUser(DatabaseReference usersReference, String userId, String name, String email, Family family) {
-        com.famnet.famnet.Model.User user = new com.famnet.famnet.Model.User(userId, name, family, email);
-        usersReference.child(userId).setValue(user);
-    }
 
+    //Private methods
     private void updateUI(List<Task> tasks) {
         mTaskAdapter = new TaskAdapter(tasks);
         mTaskAdapter.notifyDataSetChanged();
@@ -239,16 +222,12 @@ public class TasksActivity extends AppCompatActivity {
     }
 
 
-    /**
-     * ViewHolder class for RecyclerView
-     */
+    //ViewHolder class for RecyclerView
     public class TaskHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-
         private Task mTask;
         private TextView mTaskNameTextView;
         private TextView mTaskRewardTextView;
         private TextView mTaskDeadlineTextView;
-        //TODO: implement when user press Take button
         private Button mTaskTakeButton;
 
         public TaskHolder(View itemView) {
@@ -268,21 +247,20 @@ public class TasksActivity extends AppCompatActivity {
             mTaskTakeButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    //TODO: BUG: sometimes personal tasks get deleted when take new task
-//                    mUser.getTasks().add(mTask); // add the task to user's task list
-//                    mTaskReference.child(mTask.getId()).removeValue(); // remove task from task board
-//                    mUsersReference.child(mCurrentUser.getUid()).setValue(mUser); // Update user
 
-
+                    // Create task update
                     Map<String, Object> taskUpdates = new HashMap<>();
-                    taskUpdates.put(String.valueOf(taskCount), mTask);
-//                    taskCount++;
-                    mTaskReference.child(mTask.getId()).removeValue();
-                    mUserTaskReference.updateChildren(taskUpdates);
-                    mTaskAdapter.notifyDataSetChanged(); // Reload data change
+                    // Add the taken task to user's list task with next index based on taskCount
+                    taskUpdates.put(String.valueOf(taskCountOfCurrentUser), mTask);
 
-                    //TODO: Update this user
+                    // Remove task from task board
+                    mTaskRef.child(mTask.getId()).removeValue();
 
+                    // Add taken task to user's task list
+                    mCurrentUserTaskRef.updateChildren(taskUpdates);
+
+                    // Reload data change in task board
+                    mTaskAdapter.notifyDataSetChanged();
                 }
             });
         }
@@ -295,9 +273,7 @@ public class TasksActivity extends AppCompatActivity {
     }
 
 
-    /**
-     * Adapter class for RecyclerView
-     */
+    //Adapter class for RecyclerView
     public class TaskAdapter extends RecyclerView.Adapter<TaskHolder> implements Filterable {
 
         private List<Task> mTasks;
@@ -323,9 +299,8 @@ public class TasksActivity extends AppCompatActivity {
             return mTasks.size();
         }
 
-
-// SEARCH TASKS BEGINS HERE
-
+        //TODO: check the search implementation again
+        // SEARCH TASKS BEGINS HERE
         //GET FILTER METHOD
         //TODO: BUG: does not show all list again after search
         @Override
