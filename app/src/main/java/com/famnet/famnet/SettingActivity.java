@@ -20,12 +20,13 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
+import java.util.HashMap;
 
 public class SettingActivity extends AppCompatActivity {
 
@@ -116,7 +117,6 @@ public class SettingActivity extends AppCompatActivity {
         mSaveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 // Change password
                 if (newPassword != null) {
                     Log.d(TAG, "Verify: " + mCurrentUser.isEmailVerified());
@@ -138,12 +138,12 @@ public class SettingActivity extends AppCompatActivity {
                 }
 
                 //TODO: implement family
-                User newUser = new User(user.getId(),
-                        mUserName.getText().toString(),
-                        null,
-                        mUserEmail.getText().toString());
+                HashMap<String, Object> childUpdates = new HashMap<>();
+                childUpdates.put("name", mUserName.getText().toString());
+//                childUpdates.put("family", mUserFamily.getText());
 
-                mCurrentUserReference.setValue(newUser);
+                mCurrentUserReference.updateChildren(childUpdates);
+
                 Intent returnIntent = new Intent(SettingActivity.this, AccountActivity.class);
                 setResult(Activity.RESULT_OK, returnIntent);
                 finish();

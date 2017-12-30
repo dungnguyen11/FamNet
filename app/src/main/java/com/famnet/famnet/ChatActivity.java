@@ -16,7 +16,6 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -85,8 +84,9 @@ public class ChatActivity extends AppCompatActivity {
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         mMessagesReference = mFirebaseDatabase.getReference("Messages");
         mCurrentUser = mFirebaseAuth.getCurrentUser();
-        mFirebaseStorage = FirebaseStorage.getInstance();
-        mChatPhotosReference = mFirebaseStorage.getReference().child("chat_photos");
+        //TODO: BUG: crash when load this
+//        mFirebaseStorage = FirebaseStorage.getInstance();
+//        mChatPhotosReference = mFirebaseStorage.getReference().child("chat_photos");
         // Properties
         if (mCurrentUser.getDisplayName() != null) {
             mUsername = mCurrentUser.getDisplayName();
