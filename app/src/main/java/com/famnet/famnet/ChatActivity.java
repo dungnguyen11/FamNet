@@ -4,8 +4,10 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
@@ -131,6 +133,9 @@ public class ChatActivity extends AppCompatActivity {
                             .setContentTitle("Famnet - New Message in Chat Board")
                             .setContentText("Someone in your family just sent a new message in Chat Board. Check it now !")
                             .setSmallIcon(R.drawable.notification)
+                            .setVibrate(new long[] { 1000, 1000})
+                            .setSound(Settings.System.DEFAULT_NOTIFICATION_URI)
+                            .setLights(Color.RED, 3000, 3000)
                             .setContentIntent(pendingIntent).getNotification();
 
 

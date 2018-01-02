@@ -5,7 +5,9 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
@@ -166,6 +168,9 @@ public class TasksActivity extends AppCompatActivity {
                         .setContentTitle("Famnet - New Task In Family TaskBoard")
                         .setContentText("Someone in your family just created a new task. Check it now !")
                         .setSmallIcon(R.drawable.notification)
+                        .setVibrate(new long[] { 1000, 1000 })
+                        .setSound(Settings.System.DEFAULT_NOTIFICATION_URI)
+                        .setLights(Color.RED, 3000, 3000)
                         .setContentIntent(pendingIntent).getNotification();
 
 
