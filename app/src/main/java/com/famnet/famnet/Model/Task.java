@@ -1,12 +1,13 @@
 package com.famnet.famnet.Model;
 
+import java.io.Serializable;
 import java.util.UUID;
 
 /**
  * Created by DungNguyen on 11/21/17.
  */
 
-public class Task {
+public class Task implements Serializable {
     private String id;
     private String name;
     private String description;

@@ -36,12 +36,13 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class TasksActivity extends AppCompatActivity {
+public class TasksActivity extends AppCompatActivity{
 
     //Constant
     private String TAG = "TasksActivity";
@@ -159,24 +160,7 @@ public class TasksActivity extends AppCompatActivity {
                 mTaskList = taskList;
                 updateUI(mTaskList);
 
-                //TODO: Move this to a function
-                // Notification
-                Intent intent = new Intent();
-                PendingIntent pendingIntent = PendingIntent.getActivity(TasksActivity.this, 0, intent, 0);
-                Notification noti = new Notification.Builder(TasksActivity.this)
-                        .setTicker("Famnet New Task")
-                        .setContentTitle("Famnet - New Task In Family TaskBoard")
-                        .setContentText("Someone in your family just created a new task. Check it now !")
-                        .setSmallIcon(R.drawable.notification)
-                        .setVibrate(new long[] { 1000, 1000 })
-                        .setSound(Settings.System.DEFAULT_NOTIFICATION_URI)
-                        .setLights(Color.RED, 3000, 3000)
-                        .setContentIntent(pendingIntent).getNotification();
-
-
-                noti.flags = Notification.FLAG_AUTO_CANCEL;
-                NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-                notificationManager.notify(0, noti);
+//                notification();
 
             }
 
@@ -218,6 +202,27 @@ public class TasksActivity extends AppCompatActivity {
     }
 
 
+    //TODO: Bug: always send notification
+    // Notification
+    private void notification(){
+        Intent intent = new Intent();
+        PendingIntent pendingIntent = PendingIntent.getActivity(TasksActivity.this, 0, intent, 0);
+        Notification noti = new Notification.Builder(TasksActivity.this)
+                .setTicker("Famnet New Task")
+                .setContentTitle("Famnet - New Task In Family TaskBoard")
+                .setContentText("Someone in your family just created a new task. Check it now !")
+                .setSmallIcon(R.drawable.notification)
+                .setVibrate(new long[] { 1000, 1000 })
+                .setSound(Settings.System.DEFAULT_NOTIFICATION_URI)
+                .setLights(Color.RED, 3000, 3000)
+                .setContentIntent(pendingIntent).getNotification();
+
+        noti.flags = Notification.FLAG_AUTO_CANCEL;
+        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        notificationManager.notify(0, noti);
+    }
+
+
     //Private methods
     private void updateUI(List<Task> tasks) {
         mTaskAdapter = new TaskAdapter(tasks);
@@ -228,7 +233,7 @@ public class TasksActivity extends AppCompatActivity {
 
 
     //ViewHolder class for RecyclerView
-    public class TaskHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class TaskHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         private Task mTask;
         private TextView mTaskNameTextView;
         private TextView mTaskRewardTextView;
@@ -252,11 +257,12 @@ public class TasksActivity extends AppCompatActivity {
             mTaskTakeButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
                     // Create task update
                     Map<String, Object> taskUpdates = new HashMap<>();
+
                     // Add the taken task to user's list task with next index based on taskCount
-                    taskUpdates.put(String.valueOf(taskCountOfCurrentUser), mTask);
+//                    taskUpdates.put(String.valueOf(taskCountOfCurrentUser), mTask);
+                    taskUpdates.put(mTask.getId(), mTask);
 
                     // Remove task from task board
                     mTaskRef.child(mTask.getId()).removeValue();
@@ -270,10 +276,12 @@ public class TasksActivity extends AppCompatActivity {
             });
         }
 
-        //TODO:implment onClick()
         @Override
         public void onClick(View v) {
-
+            Intent detailIntent = new Intent(TasksActivity.this, TaskDetailActivity.class);
+            detailIntent.putExtra("task", mTask);
+            detailIntent.putExtra("identifier", "TasksActivity");
+            startActivity(detailIntent);
         }
     }
 

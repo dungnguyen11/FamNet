@@ -18,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -74,7 +75,15 @@ public class ChatActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
+        //Hide action bar
+//        if (getActionBar() != null) {
+//            getActionBar().hide();
+//        }
+
+//        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+
         //Views init
+        findViewById(R.id.chat_mainLayout).requestFocus();
         mNewMessage = findViewById(R.id.new_chat_text);
         mSendButton = findViewById(R.id.send_button);
         mPhotoPickerButton = findViewById(R.id.photoPickerButton);
@@ -124,24 +133,8 @@ public class ChatActivity extends AppCompatActivity {
 
                     updateMessages(mMessageList);
 
+//                    notification();
 
-                    // Notification
-                    Intent intent = new Intent();
-                    PendingIntent pendingIntent = PendingIntent.getActivity(ChatActivity.this, 0, intent, 0);
-                    Notification noti = new Notification.Builder(ChatActivity.this)
-                            .setTicker("Famnet - New Message in Family ChatBoard")
-                            .setContentTitle("Famnet - New Message in Chat Board")
-                            .setContentText("Someone in your family just sent a new message in Chat Board. Check it now !")
-                            .setSmallIcon(R.drawable.notification)
-                            .setVibrate(new long[] { 1000, 1000})
-                            .setSound(Settings.System.DEFAULT_NOTIFICATION_URI)
-                            .setLights(Color.RED, 3000, 3000)
-                            .setContentIntent(pendingIntent).getNotification();
-
-
-                    noti.flags = Notification.FLAG_AUTO_CANCEL;
-                    NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-                    notificationManager.notify(0, noti);
                 }
             }
 
@@ -150,6 +143,9 @@ public class ChatActivity extends AppCompatActivity {
                 Toast.makeText(ChatActivity.this, "Failed to read data", Toast.LENGTH_SHORT).show();
             }
         });
+
+        // Scroll to the bottom
+        mRecyclerView.scrollToPosition(mMessageList.size() - 1);
 
 
         // Message implementation
@@ -164,6 +160,9 @@ public class ChatActivity extends AppCompatActivity {
                     mNewMessage.setText("");
 //                    Toast.makeText(ChatActivity.this,
 //                            "Your message has been sent !", Toast.LENGTH_LONG).show();
+
+                    // Scroll to the bottom
+                    mRecyclerView.scrollToPosition(mMessageList.size() - 1);
                 }
             }
         });
@@ -205,6 +204,27 @@ public class ChatActivity extends AppCompatActivity {
                 return false;
             }
         });
+    }
+
+    //TODO: Bug: always send notification
+    // Notification
+    private void notification() {
+        Intent intent = new Intent();
+        PendingIntent pendingIntent = PendingIntent.getActivity(ChatActivity.this, 0, intent, 0);
+        Notification noti = new Notification.Builder(ChatActivity.this)
+                .setTicker("Famnet - New Message in Family ChatBoard")
+                .setContentTitle("Famnet - New Message in Chat Board")
+                .setContentText("Someone in your family just sent a new message in Chat Board. Check it now !")
+                .setSmallIcon(R.drawable.notification)
+                .setVibrate(new long[] { 1000, 1000})
+                .setSound(Settings.System.DEFAULT_NOTIFICATION_URI)
+                .setLights(Color.RED, 3000, 3000)
+                .setContentIntent(pendingIntent).getNotification();
+
+
+        noti.flags = Notification.FLAG_AUTO_CANCEL;
+        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        notificationManager.notify(0, noti);
     }
 
 

@@ -58,6 +58,7 @@ public class NewTaskActivity extends AppCompatActivity {
 
         createButton.setOnClickListener(new View.OnClickListener() {
             @Override
+            //TODO: Implemnt spinner to select assigned person
             public void onClick(View view) {
                 //Create new task with information from views, and add to the database
                 Task task = new Task(taskNameTextView.getText().toString(),

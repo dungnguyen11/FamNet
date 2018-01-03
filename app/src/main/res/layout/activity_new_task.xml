@@ -13,7 +13,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:imeOptions="actionNext"
+        android:gravity="top|left"
         android:inputType="text"
+        android:maxLength="40"
+        android:ellipsize="end"
         android:hint="@string/task_name"/>
 
 
@@ -22,7 +25,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:imeOptions="actionNext"
+        android:gravity="top|left"
         android:inputType="text"
+        android:maxLength="40"
+        android:ellipsize="end"
         android:hint="@string/task_reward"/>
 
     <EditText
@@ -31,6 +37,9 @@
         android:layout_height="wrap_content"
         android:imeOptions="actionDone"
         android:inputType="text"
+        android:maxLength="60"
+        android:ellipsize="end"
+        android:gravity="top|left"
         android:hint="@string/task_description" />
 
     <LinearLayout

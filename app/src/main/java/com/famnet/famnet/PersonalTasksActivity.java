@@ -1,8 +1,11 @@
 package com.famnet.famnet;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -37,7 +40,7 @@ public class PersonalTasksActivity extends AppCompatActivity {
     private static final String TAG = "PersonalTaskActivity";
 
     // View
-    private ImageView mNewTaskImageView;
+    private FloatingActionButton mNewTaskButton;
     private RecyclerView mPersonalRecyclerView;
     private PersonalTaskAdapter mPersonalTaskAdapter;
 
@@ -69,8 +72,8 @@ public class PersonalTasksActivity extends AppCompatActivity {
         mPersonalRecyclerView = findViewById(R.id.personal_tasks_recyclerView);
         mPersonalRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        mNewTaskImageView = findViewById(R.id.add_new_task_ImageView);
-        mNewTaskImageView.setOnClickListener(new View.OnClickListener() {
+        mNewTaskButton = findViewById(R.id.add_new_task_button);
+        mNewTaskButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(PersonalTasksActivity.this, NewTaskActivity.class);
@@ -145,7 +148,7 @@ public class PersonalTasksActivity extends AppCompatActivity {
     }
 
     // ViewHolder class for RecyclerView
-    public class PersonalTaskHolder extends RecyclerView.ViewHolder {
+    public class PersonalTaskHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private Task mTask;
         private TextView mTaskName;
@@ -154,26 +157,67 @@ public class PersonalTasksActivity extends AppCompatActivity {
         private CheckBox mCheckBox;
 
 
-        public PersonalTaskHolder(View itemView) {
+        public PersonalTaskHolder(final View itemView) {
             super(itemView);
+            itemView.setOnClickListener(this);
             mTaskName = itemView.findViewById(R.id.personal_task_name_textView);
             mTaskReward = itemView.findViewById(R.id.personal_task_reward_textView);
             mTaskDeadline = itemView.findViewById(R.id.personal_task_deadline_textView);
             mCheckBox = itemView.findViewById(R.id.personal_task_checkBox);
+            mCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    if (isChecked) {
+                        mTaskName.setTextColor(Color.BLACK);
+                        mTaskReward.setTextColor(Color.BLACK);
+                        mTaskDeadline.setTextColor(Color.BLACK);
+                        Drawable taskBackground = getResources().getDrawable(R.drawable.border_done);
+                        itemView.setBackground(taskBackground);
+                    }
+
+                    if (!isChecked) {
+                        mTaskName.setTextColor(Color.parseColor("#000080"));
+                        mTaskReward.setTextColor(Color.BLACK);
+                        mTaskDeadline.setTextColor(Color.parseColor("#dd3737"));
+                        Drawable taskBackground = getResources().getDrawable(R.drawable.border);
+                        itemView.setBackground(taskBackground);
+                    }
+                }
+            });
         }
 
         public void bind(Task task) {
             mTask = task;
             mTaskName.setText(mTask.getName());
             mTaskReward.setText("Reward: " + mTask.getReward());
-            mTaskDeadline.setText("Description: " + mTask.getDeadline());
-            //TODO: Implement checkbox
-            mCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            mTaskDeadline.setText("Deadline: " + mTask.getDeadline());
 
-                }
-            });
+            //TODO: Implement checkbox
+//            mCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//                @Override
+//                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+//                    if (isChecked) {
+//                        mTaskName.setTextColor(Color.DKGRAY);
+//                        mTaskReward.setTextColor(Color.DKGRAY);
+//                        mTaskDeadline.setTextColor(Color.DKGRAY);
+//                    }
+//
+//                    if (!isChecked) {
+//                        mTaskName.setTextColor(Color.parseColor("#000080"));
+//                        mTaskReward.setEnabled(true);
+//                        mTaskDeadline.setEnabled(true);
+//                    }
+//
+//                }
+//            });
+        }
+
+        @Override
+        public void onClick(View v) {
+            Intent detailIntent = new Intent(PersonalTasksActivity.this, TaskDetailActivity.class);
+            detailIntent.putExtra("task", mTask);
+            detailIntent.putExtra("identifier", "PersonalTasksActivity");
+            startActivity(detailIntent);
         }
     }
 
