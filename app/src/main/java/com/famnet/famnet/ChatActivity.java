@@ -75,13 +75,6 @@ public class ChatActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
-        //Hide action bar
-//        if (getActionBar() != null) {
-//            getActionBar().hide();
-//        }
-
-//        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
-
         //Views init
         findViewById(R.id.chat_mainLayout).requestFocus();
         mNewMessage = findViewById(R.id.new_chat_text);
@@ -115,7 +108,6 @@ public class ChatActivity extends AppCompatActivity {
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        //TODO: Still having bug when loading Message
         mMessagesReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -168,15 +160,15 @@ public class ChatActivity extends AppCompatActivity {
         });
 
         // ImagePickerButton shows an image picker to upload a image for a message
-        mPhotoPickerButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent i = new Intent(Intent.ACTION_GET_CONTENT);
-                i.setType("image/jpeg");
-                i.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
-                startActivityForResult(Intent.createChooser(i, "Complete action using"), RC_PHOTO_PICKER);
-            }
-        });
+//        mPhotoPickerButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Intent i = new Intent(Intent.ACTION_GET_CONTENT);
+//                i.setType("image/jpeg");
+//                i.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
+//                startActivityForResult(Intent.createChooser(i, "Complete action using"), RC_PHOTO_PICKER);
+//            }
+//        });
 
 
         //Navigation bar
@@ -265,16 +257,12 @@ public class ChatActivity extends AppCompatActivity {
         private Message mMessage;
         private TextView mLeftChat;
         private TextView mLeftSender;
-//        private TextView mRightChat;
-//        private TextView mRightSender;
 
         public MessageHolder(View itemView) {
             super(itemView);
             itemView.setOnClickListener(this);
             mLeftChat = itemView.findViewById(R.id.chat_left_textView);
             mLeftSender = itemView.findViewById(R.id.chat_sender_left_textView);
-//            mRightChat = itemView.findViewById(R.id.chat_right_textView);
-//            mRightSender = itemView.findViewById(R.id.chat_sender_right_textView);
         }
 
         public void bind(Message message) {

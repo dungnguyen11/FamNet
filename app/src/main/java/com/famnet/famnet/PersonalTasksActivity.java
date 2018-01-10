@@ -192,24 +192,6 @@ public class PersonalTasksActivity extends AppCompatActivity {
             mTaskReward.setText("Reward: " + mTask.getReward());
             mTaskDeadline.setText("Deadline: " + mTask.getDeadline());
 
-            //TODO: Implement checkbox
-//            mCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-//                @Override
-//                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-//                    if (isChecked) {
-//                        mTaskName.setTextColor(Color.DKGRAY);
-//                        mTaskReward.setTextColor(Color.DKGRAY);
-//                        mTaskDeadline.setTextColor(Color.DKGRAY);
-//                    }
-//
-//                    if (!isChecked) {
-//                        mTaskName.setTextColor(Color.parseColor("#000080"));
-//                        mTaskReward.setEnabled(true);
-//                        mTaskDeadline.setEnabled(true);
-//                    }
-//
-//                }
-//            });
         }
 
         @Override

@@ -10,9 +10,11 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -30,6 +32,7 @@ import com.famnet.famnet.Model.Task;
 import com.famnet.famnet.Model.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -71,6 +74,9 @@ public class TasksActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tasks);
+
+        Log.d(TAG, "TasksActivity onCreate");
+
 
 
         //TODO: Create bug when assign family to null
@@ -114,7 +120,6 @@ public class TasksActivity extends AppCompatActivity{
 
             }
         });
-
 
 
 
@@ -173,6 +178,20 @@ public class TasksActivity extends AppCompatActivity{
         });
 
 
+        // Set notification when a new task is added
+        mTaskRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+//                notification();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
         //Navigation bottom
         BottomNavigationView navigationView = findViewById(R.id.bottom_navigation);
         navigationView.setSelectedItemId(R.id.navigation_tasks);
@@ -207,6 +226,7 @@ public class TasksActivity extends AppCompatActivity{
     private void notification(){
         Intent intent = new Intent();
         PendingIntent pendingIntent = PendingIntent.getActivity(TasksActivity.this, 0, intent, 0);
+
         Notification noti = new Notification.Builder(TasksActivity.this)
                 .setTicker("Famnet New Task")
                 .setContentTitle("Famnet - New Task In Family TaskBoard")
@@ -217,8 +237,9 @@ public class TasksActivity extends AppCompatActivity{
                 .setLights(Color.RED, 3000, 3000)
                 .setContentIntent(pendingIntent).getNotification();
 
+
         noti.flags = Notification.FLAG_AUTO_CANCEL;
-        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.notify(0, noti);
     }
 
@@ -227,7 +248,6 @@ public class TasksActivity extends AppCompatActivity{
     private void updateUI(List<Task> tasks) {
         mTaskAdapter = new TaskAdapter(tasks);
         mTaskAdapter.notifyDataSetChanged();
-        //TODO: BUG: the last task is not deleted when taking, have to change activity to delete it
         mRecyclerView.setAdapter(mTaskAdapter);
     }
 
